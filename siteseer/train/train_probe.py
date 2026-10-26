@@ -1,11 +1,11 @@
 """Train a probe on frozen language-model embeddings against per-residue site labels.
 
-  python -m compass.train.train_probe --config configs/main/stage2_mcsa.yaml --encoder esm_raw \\
+  python -m siteseer.train.train_probe --config configs/main/stage2_mcsa.yaml --encoder esm_raw \\
       --init-probe-checkpoint checkpoints/<stage-1.5 run>/best.pt [--set seed=43 run_name=..._seed43]
 
 Encoders: `esm_raw` (ESM-2, layer and standardisation from data.esm_model / esm_layer / norm_stats) and `esmc_raw`
-(ESMC-6B). Probe architectures: `flat` (compass.models.probe) and `graph_v2` (the structural ablation,
-compass.structural; needs --structure-root or data.structure_root and usually --pretrained-gvp-checkpoint).
+(ESMC-6B). Probe architectures: `flat` (siteseer.models.probe) and `graph_v2` (the structural ablation,
+siteseer.structural; needs --structure-root or data.structure_root and usually --pretrained-gvp-checkpoint).
 One optimizer step per protein; validation every logging.eval_every_n_epochs epochs; best.pt is the checkpoint with
 the best validation AUPRC of the main output, final.pt the last one, latest.pt (with --checkpoint-every-n-steps) a
 mid-epoch state for --resume-from.
@@ -21,12 +21,12 @@ import torch
 import yaml
 from torch.utils.data import DataLoader
 
-from compass.data.datasets import build_dataset, identity_collate
-from compass.data.site_types import TYPE_NAMES
-from compass.embeddings.embedders import embedder_from_config
-from compass.eval.metrics import binary_metrics
-from compass.models.probe import probe_from_config
-from compass.train.losses import build_probe_loss, masked_type_loss
+from siteseer.data.datasets import build_dataset, identity_collate
+from siteseer.data.site_types import TYPE_NAMES
+from siteseer.embeddings.embedders import embedder_from_config
+from siteseer.eval.metrics import binary_metrics
+from siteseer.models.probe import probe_from_config
+from siteseer.train.losses import build_probe_loss, masked_type_loss
 
 ENCODERS = ("esm_raw", "esmc_raw")
 
@@ -127,7 +127,7 @@ def _git_hash() -> str:
     try:
         out = subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True, cwd=here,
                              timeout=5)
-        dirty = subprocess.run(["git", "status", "--porcelain", "--untracked-files=no", "--", "compass"],
+        dirty = subprocess.run(["git", "status", "--porcelain", "--untracked-files=no", "--", "siteseer"],
                                capture_output=True, text=True, cwd=here, timeout=5).stdout.strip()
         return out.stdout.strip() + ("-dirty" if dirty else "") if out.returncode == 0 else "unknown"
     except Exception:
@@ -140,7 +140,7 @@ def build_model_and_data(args, cfg, device):
     data_cfg, probe_cfg = cfg["data"], cfg["probe"]
     embed_dim = embed_dim_for(data_cfg, args.encoder)
     if args.probe_architecture == "graph_v2":
-        from compass.structural.probe import build_structural   # structural ablation only
+        from siteseer.structural.probe import build_structural   # structural ablation only
         return build_structural(args, cfg, device, embed_dim)
     embedder = None
     if data_cfg.get("dataset_class", "mcsa") == "mcsa":

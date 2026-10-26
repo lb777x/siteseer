@@ -18,7 +18,7 @@ from typing import Optional
 
 import torch
 
-from compass.data.labels import parse_site_labels
+from siteseer.data.labels import parse_site_labels
 
 TYPE_NAMES = ("catalytic", "binding")
 CATALYTIC_SOURCES = frozenset({"m3site", "m3site_new", "mcsa_blast_homology", "mcsa",

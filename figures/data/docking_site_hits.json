@@ -11,7 +11,7 @@
     {
       "condition": "_predicted_cropped_hit",
       "label": "Cropped",
-      "kind": "compass",
+      "kind": "siteseer",
       "rate": 68.75981161695447,
       "delta_pp": 3.453689167974882,
       "ci_pp": [
@@ -22,7 +22,7 @@
     {
       "condition": "_predicted_cropped_weighted_hit",
       "label": "Weighted cropped",
-      "kind": "compass",
+      "kind": "siteseer",
       "rate": 72.05651491365776,
       "delta_pp": 6.750392464678178,
       "ci_pp": [
@@ -32,8 +32,8 @@
     },
     {
       "condition": "_global_rerank_hit",
-      "label": "COMPASS re-ranking",
-      "kind": "compass",
+      "label": "SiteSeer re-ranking",
+      "kind": "siteseer",
       "rate": 76.92307692307693,
       "delta_pp": 11.616954474097332,
       "ci_pp": [

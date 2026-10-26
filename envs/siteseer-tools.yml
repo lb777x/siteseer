@@ -1,6 +1,6 @@
 # Sequence search and pocket prediction: BLAST+ (label transfer, identity checks), MMseqs2 (clustering, splits,
 # exclusions), Java for P2Rank (installed by envs/install_p2rank.sh).
-name: compass-tools
+name: siteseer-tools
 channels:
   - conda-forge
   - bioconda

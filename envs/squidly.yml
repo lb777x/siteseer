@@ -1,7 +1,7 @@
 # Squidly environment (comparison only): the released Squidly 3B ensemble (Rieger et al.), run through its own
 # ensemble script. Create with envs/install_squidly.sh, which adds squidly without its pinned dependency set and
 # downloads the weights.
-name: compass-squidly
+name: siteseer-squidly
 channels:
   - conda-forge
 dependencies:

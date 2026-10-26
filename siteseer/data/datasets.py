@@ -18,9 +18,9 @@ import pandas as pd
 import torch
 from torch.utils.data import Dataset
 
-from compass.data.labels import parse_site_labels, row_label_source
-from compass.data.site_types import site_type_sets, type_targets
-from compass.embeddings.embedders import MAX_SEQ_LEN, Embedder, apply_norm, load_norm_stats
+from siteseer.data.labels import parse_site_labels, row_label_source
+from siteseer.data.site_types import site_type_sets, type_targets
+from siteseer.embeddings.embedders import MAX_SEQ_LEN, Embedder, apply_norm, load_norm_stats
 
 
 def _filter_ids(df: pd.DataFrame, id_column: str, filter_ids: Optional[set]) -> pd.DataFrame:

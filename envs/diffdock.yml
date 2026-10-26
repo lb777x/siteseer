@@ -1,7 +1,7 @@
 # DiffDock environment (docking application only), as used for the reported runs: DiffDock (gcorso/DiffDock,
 # commit 85c49b6) on torch 2.0.1 + CUDA 11.8. Create it with envs/install_diffdock.sh, which also clones DiffDock
 # and applies envs/diffdock_parse_chi.patch.
-name: compass-diffdock
+name: siteseer-diffdock
 channels:
   - conda-forge
   - bioconda

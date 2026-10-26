@@ -4,7 +4,7 @@ Two units, two panels: (A) difference in DiffDock's confidence, (B) runtime savi
 point with its paired 95% bootstrap CI over proteins; the zero line is docking the whole structure. Every condition
 ran on the same node per protein, so the runtime comparison is hardware-matched.
 
-Data: figures/data/docking_paired.json, written by compass.docking.paired_bootstrap from the comparison table.
+Data: figures/data/docking_paired.json, written by siteseer.docking.paired_bootstrap from the comparison table.
 
   python figures/plot_docking_runtime_confidence.py
 """

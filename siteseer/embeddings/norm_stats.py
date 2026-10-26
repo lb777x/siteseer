@@ -1,11 +1,11 @@
 """Per-dimension mean / std of an embedding cache, from training proteins only.
 
 Written to <cache>/norm_stats.pt ({"mean", "std", "n_proteins", "n_residues", "csv", "seed"}) and applied on loading
-by compass.embeddings.embedders.apply_norm (data.norm_stats in the configs; also the esm2_650m_l30 embedder used for
+by siteseer.embeddings.embedders.apply_norm (data.norm_stats in the configs; also the esm2_650m_l30 embedder used for
 inference): the same standardisation the linear layer screens used (StandardScaler), with statistics fixed once so
 that training, evaluation and inference see identical inputs.
 
-  python -m compass.embeddings.norm_stats --cache-dir data/embeddings_goliath_esm2_l30
+  python -m siteseer.embeddings.norm_stats --cache-dir data/embeddings_goliath_esm2_l30
 """
 import argparse
 import os

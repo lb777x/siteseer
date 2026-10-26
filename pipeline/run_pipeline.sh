@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Rebuild every training and evaluation split from the raw sources, then verify the result against the checksums of
-# the reported runs. Run from the data root (the directory that holds dataset/ and data/), with the compass
-# environment active and BLAST+/MMseqs2 on PATH (envs/compass-tools.yml), after pipeline/00_download.py.
-#   bash /path/to/compass/pipeline/run_pipeline.sh
+# the reported runs. Run from the data root (the directory that holds dataset/ and data/), with the siteseer
+# environment active and BLAST+/MMseqs2 on PATH (envs/siteseer-tools.yml), after pipeline/00_download.py.
+#   bash /path/to/siteseer/pipeline/run_pipeline.sh
 set -euo pipefail
 P="$(cd "$(dirname "$0")" && pwd)"
 L=dataset/label_diffusion

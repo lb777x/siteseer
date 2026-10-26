@@ -1,11 +1,11 @@
 """Evaluate a trained probe on one split: pooled and macro metrics with protein-level bootstrap CIs.
 
-  python -m compass.eval.evaluate --config configs/main/stage2_mcsa.yaml --encoder esm_raw \\
+  python -m siteseer.eval.evaluate --config configs/main/stage2_mcsa.yaml --encoder esm_raw \\
       --probe-checkpoint checkpoints/<run>/best.pt --split test [--calibrate-threshold] \\
       [--filter-ids-file ids.txt] [--save-predictions results/<name>.pt]
 
 --save-predictions writes {"protein_ids", "logits", "labels"} (per-protein tensors), the input format of
-compass.eval.paired_bootstrap and compass.eval.ensemble. --calibrate-threshold additionally fits the pooled-F1
+siteseer.eval.paired_bootstrap and siteseer.eval.ensemble. --calibrate-threshold additionally fits the pooled-F1
 threshold on the validation split and reports the requested split at that threshold.
 """
 import argparse
@@ -13,12 +13,12 @@ import argparse
 import torch
 from torch.utils.data import DataLoader
 
-from compass.data.datasets import build_dataset, identity_collate
-from compass.embeddings.embedders import embedder_from_config
-from compass.eval.metrics import bootstrap_ci, find_best_threshold, format_bootstrap_result
-from compass.models.probe import load_probe
-from compass.train.losses import build_probe_loss
-from compass.train.train_probe import ENCODERS, embed_dim_for, load_config, run_epoch
+from siteseer.data.datasets import build_dataset, identity_collate
+from siteseer.embeddings.embedders import embedder_from_config
+from siteseer.eval.metrics import bootstrap_ci, find_best_threshold, format_bootstrap_result
+from siteseer.models.probe import load_probe
+from siteseer.train.losses import build_probe_loss
+from siteseer.train.train_probe import ENCODERS, embed_dim_for, load_config, run_epoch
 
 
 def main():
@@ -47,7 +47,7 @@ def main():
         print(f"[*] restricting to {len(filter_ids)} proteins from {args.filter_ids_file}")
 
     if args.probe_architecture == "graph_v2":
-        from compass.structural.probe import load_structural_for_eval   # structural ablation only
+        from siteseer.structural.probe import load_structural_for_eval   # structural ablation only
         probe, make_dataset, to_input, probe_cfg = load_structural_for_eval(args, cfg, device)
     else:
         probe, ckpt = load_probe(args.probe_checkpoint, device)

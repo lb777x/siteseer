@@ -1,13 +1,13 @@
 """Average several models' predictions on the same proteins and score the result.
 
-Inputs are --save-predictions files from compass.eval.evaluate for models that were
+Inputs are --save-predictions files from siteseer.eval.evaluate for models that were
 evaluated on the SAME split (e.g. one per seed). Proteins present in every file are
 kept; probabilities (not logits) are averaged per residue, since the members are
 separately trained and their logit scales need not agree. Reports each member's own
 metrics, the spread across members (mean, std, min, max), and the ensemble's metrics
 with bootstrap CIs -- so "the ensemble helps" can be read against the seed noise.
 
-  python -m compass.eval.ensemble --predictions a.pt b.pt c.pt [--threshold 0.5]
+  python -m siteseer.eval.ensemble --predictions a.pt b.pt c.pt [--threshold 0.5]
 """
 import argparse
 import json
@@ -15,7 +15,7 @@ import json
 import numpy as np
 import torch
 
-from compass.eval.metrics import binary_metrics, bootstrap_ci, format_bootstrap_result
+from siteseer.eval.metrics import binary_metrics, bootstrap_ci, format_bootstrap_result
 
 KEYS = ("precision", "recall", "f1", "mcc", "auprc")
 
@@ -28,7 +28,7 @@ def main():
     p.add_argument("--out-json", default=None)
     p.add_argument("--save-ensemble", default=None,
                    help="write the averaged predictions in --save-predictions format, so the ensemble "
-                        "can be fed to compass.eval.paired_bootstrap like any other model")
+                        "can be fed to siteseer.eval.paired_bootstrap like any other model")
     args = p.parse_args()
 
     members = []

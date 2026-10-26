@@ -1,6 +1,6 @@
 import pytest
 
-from compass.train.train_probe import apply_overrides
+from siteseer.train.train_probe import apply_overrides
 
 
 def test_overrides_nested_and_typed():

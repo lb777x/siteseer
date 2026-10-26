@@ -10,7 +10,7 @@ from conftest import need
 
 
 def run_paired(a, b, label_a, label_b, n_bootstrap, out, cwd):
-    cmd = [sys.executable, "-m", "compass.eval.paired_bootstrap", "--a", *a, "--b", *b, "--label-a", label_a,
+    cmd = [sys.executable, "-m", "siteseer.eval.paired_bootstrap", "--a", *a, "--b", *b, "--label-a", label_a,
            "--label-b", label_b, "--n-bootstrap", str(n_bootstrap), "--out-json", out]
     env = dict(os.environ, PYTHONPATH=os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     subprocess.run(cmd, check=True, cwd=cwd, env=env, capture_output=True)

@@ -4,7 +4,7 @@ An embedder turns a protein sequence into a per-residue matrix [L, dim] (float32
 sequences of at most MAX_SEQ_LEN residues (callers truncate).
 
   ESM2Embedder   fair-esm ESM-2 (650M or 3B), any layer, optional per-dimension standardisation
-                 (statistics from compass.embeddings.norm_stats; needed for intermediate layers, which fair-esm
+                 (statistics from siteseer.embeddings.norm_stats; needed for intermediate layers, which fair-esm
                  returns without the final LayerNorm)
   ESMCEmbedder   ESMC-6B (biohub/ESMC-6B via transformers), last hidden state, fp16 weights
 

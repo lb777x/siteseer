@@ -4,11 +4,11 @@ in cached_dataframe_final_resplit90.csv (or `_original_row_index`), sequences ca
 Only the rows the given training CSVs read (their train/valid/test splits) are computed; rows with an identical
 sequence are computed once and hard-linked. Resumable: existing files are skipped. Stored RAW -- intermediate layers
 come out of fair-esm without the final LayerNorm, so standardisation happens on loading, from the per-dimension
-statistics written by compass.embeddings.norm_stats (data.norm_stats in the configs).
+statistics written by siteseer.embeddings.norm_stats (data.norm_stats in the configs).
 
-  python -u -m compass.embeddings.extract_esm2_cache --layer 30 --out-dir data/embeddings_goliath_esm2_l30
-  python -u -m compass.embeddings.extract_esm2_cache --model esm2_t36_3B_UR50D --layer 36 --out-dir data/embeddings_goliath_esm2_3b
-  python -u -m compass.embeddings.extract_esm2_cache --layer 30 --own-sequences \
+  python -u -m siteseer.embeddings.extract_esm2_cache --layer 30 --out-dir data/embeddings_goliath_esm2_l30
+  python -u -m siteseer.embeddings.extract_esm2_cache --model esm2_t36_3B_UR50D --layer 36 --out-dir data/embeddings_goliath_esm2_3b
+  python -u -m siteseer.embeddings.extract_esm2_cache --layer 30 --own-sequences \
       --need-csv dataset/catalodb_squidly/catalodb_squidly.csv --out-dir data/embeddings_catalodb_esm2_l30
 """
 import argparse

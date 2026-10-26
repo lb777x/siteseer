@@ -7,9 +7,9 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 TARGET="${1:-external/squidly}"
 REVISION=f5a4b52a0bf46cf900ddc5207c92b6a62a595b29
 
-conda env list | grep -q "^compass-squidly " || conda env create -f "$HERE/squidly.yml"
-conda run -n compass-squidly pip install --no-deps squidly==0.1.0
-conda run -n compass-squidly python - "$TARGET" "$REVISION" <<'PY'
+conda env list | grep -q "^siteseer-squidly " || conda env create -f "$HERE/squidly.yml"
+conda run -n siteseer-squidly pip install --no-deps squidly==0.1.0
+conda run -n siteseer-squidly python - "$TARGET" "$REVISION" <<'PY'
 import os, sys
 from huggingface_hub import snapshot_download
 path = snapshot_download("WillRieger/Squidly", revision=sys.argv[2], local_dir=sys.argv[1],

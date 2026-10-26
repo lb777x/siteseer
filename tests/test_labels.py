@@ -3,8 +3,8 @@ import math
 import pandas as pd
 import pytest
 
-from compass.data.labels import parse_site_labels, row_label_source
-from compass.data.site_types import site_type_sets, type_targets
+from siteseer.data.labels import parse_site_labels, row_label_source
+from siteseer.data.site_types import site_type_sets, type_targets
 
 
 def test_goliath_range_is_inclusive():

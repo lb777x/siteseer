@@ -9,7 +9,7 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 TARGET="${1:-external/DiffDock}"
 COMMIT=85c49b6
 
-conda env list | grep -q "^compass-diffdock " || conda env create -f "$HERE/diffdock.yml"
+conda env list | grep -q "^siteseer-diffdock " || conda env create -f "$HERE/diffdock.yml"
 if [ ! -d "$TARGET/.git" ]; then
     git clone https://github.com/gcorso/DiffDock.git "$TARGET"
 fi

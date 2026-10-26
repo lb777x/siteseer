@@ -24,10 +24,10 @@ BLAST_COLUMNS = ["qseqid", "sseqid", "pident", "length", "mismatch", "gapopen",
 
 
 def tool(name: str) -> str:
-    """Path of an external tool (blastp, makeblastdb, mmseqs): $<NAME>_BIN, else PATH (envs/compass-tools.yml)."""
+    """Path of an external tool (blastp, makeblastdb, mmseqs): $<NAME>_BIN, else PATH (envs/siteseer-tools.yml)."""
     path = os.environ.get(f"{name.upper()}_BIN") or shutil.which(name)
     if not path:
-        raise SystemExit(f"{name} not found; activate the compass-tools environment or set {name.upper()}_BIN")
+        raise SystemExit(f"{name} not found; activate the siteseer-tools environment or set {name.upper()}_BIN")
     return path
 
 

@@ -1,7 +1,7 @@
 # ESMC-6B environment (language-model comparison only). EvolutionaryScale's `esm` package and fair-esm both import as
 # `esm`, so ESMC lives in its own environment. esm 3.4.1 declares torch>=2.11 but runs on 2.5.1; install it with
 # envs/install_esmc.sh, which adds it without letting pip replace torch.
-name: compass-esmc
+name: siteseer-esmc
 channels:
   - conda-forge
 dependencies:

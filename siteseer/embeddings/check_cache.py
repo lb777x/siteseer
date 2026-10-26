@@ -6,7 +6,7 @@ runs before training and fails on any gap. --quarantine-recent N first loads the
 renames unreadable ones to *.pt.corrupt (a job killed mid-write leaves one half-written file; the extraction scripts
 then recompute it); N = -1 checks every file. Keys: `_original_row_index` if the CSV has it, else the row position.
 
-  python -m compass.embeddings.check_cache --embedding-dir data/embeddings_goliath_esm2_l30 \
+  python -m siteseer.embeddings.check_cache --embedding-dir data/embeddings_goliath_esm2_l30 \
       --csv dataset/label_diffusion/cached_dataframe_fully_excl_fix2.csv \
             dataset/label_diffusion/cached_dataframe_real_labels_only_fix2.csv
 """

@@ -1,6 +1,6 @@
 """Paired bootstrap between two models' saved predictions on the same proteins.
 
-Both inputs are --save-predictions files from compass.eval.evaluate (or several
+Both inputs are --save-predictions files from siteseer.eval.evaluate (or several
 of them, e.g. one per K-fold fold, concatenated). The comparison is restricted
 to the protein ids present in BOTH sets, so a branch that drops proteins (no
 structure, sequence mismatch) is compared on exactly the proteins it did score,
@@ -19,7 +19,7 @@ Thresholded metrics use --threshold-a / --threshold-b (default 0.5 each), so
 each side can be evaluated at its own valid-calibrated threshold.
 
 Usage:
-  python -m compass.eval.paired_bootstrap \\
+  python -m siteseer.eval.paired_bootstrap \\
       --a results/flat_test_preds.pt --label-a flat \\
       --b results/structural_test_preds.pt --label-b structural \\
       [--threshold-a 0.55 --threshold-b 0.41] [--n-bootstrap 1000] [--out-json PATH]
@@ -32,7 +32,7 @@ import torch
 
 from sklearn.metrics import average_precision_score
 
-from compass.eval.metrics import binary_metrics
+from siteseer.eval.metrics import binary_metrics
 
 KEYS = ("auprc", "f1", "mcc", "precision", "recall")
 

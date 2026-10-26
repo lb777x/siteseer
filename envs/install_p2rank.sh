@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# P2Rank 2.5.1 (needs Java, e.g. from envs/compass-tools.yml).
+# P2Rank 2.5.1 (needs Java, e.g. from envs/siteseer-tools.yml).
 #   bash envs/install_p2rank.sh [TARGET_DIR]       (default: ./external)
 set -euo pipefail
 TARGET="${1:-external}"

@@ -1,12 +1,12 @@
 """Docking guided by the predicted site: share of rank-1 poses at the annotated site.
 
 A pose hits when a heavy ligand atom lies within 4 A of a heavy atom of an annotated site residue. Rows: DiffDock on
-the whole structure (grey), the two crops and COMPASS re-ranking of the whole-structure run's 10 poses (pose
+the whole structure (grey), the two crops and SiteSeer re-ranking of the whole-structure run's 10 poses (pose
 closest to the predicted site centroid; teal), and the best of the 10 poses as upper bound (light grey). Paired over
 the proteins with a pose in every condition; differences to DiffDock alone with a paired bootstrap CI (2,000 draws
 over proteins, seed 42).
 
-With --csv the data file is rebuilt from the site-accuracy table of compass.docking.site_accuracy.
+With --csv the data file is rebuilt from the site-accuracy table of siteseer.docking.site_accuracy.
 
   python figures/plot_docking_site_hits.py [--csv results/docking/site_accuracy.csv]
 """
@@ -24,9 +24,9 @@ import figstyle as fs
 
 W_PX, H_PX = 1600, 460
 ROWS = [("_global_hit", "DiffDock alone (rank 1)", "base"),
-        ("_predicted_cropped_hit", "Cropped", "compass"),
-        ("_predicted_cropped_weighted_hit", "Weighted cropped", "compass"),
-        ("_global_rerank_hit", "COMPASS re-ranking", "compass"),
+        ("_predicted_cropped_hit", "Cropped", "siteseer"),
+        ("_predicted_cropped_weighted_hit", "Weighted cropped", "siteseer"),
+        ("_global_rerank_hit", "SiteSeer re-ranking", "siteseer"),
         ("_global_oracle_hit", "Upper bound: best of 10 poses", "ref")]
 
 
@@ -39,7 +39,7 @@ def summarise(csv_path: str) -> dict:
     for col, label, kind in ROWS:
         v = m[col].astype(float).to_numpy()
         row = {"condition": col, "label": label, "kind": kind, "rate": float(v.mean() * 100)}
-        if kind == "compass":
+        if kind == "siteseer":
             d = (v[idx] - base[idx]).mean(1) * 100
             lo, hi = np.percentile(d, [2.5, 97.5])
             row.update({"delta_pp": float((v - base).mean() * 100), "ci_pp": [float(lo), float(hi)]})
@@ -57,7 +57,7 @@ def main():
         json.dump(summarise(args.csv), open(args.data, "w"), indent=2)
         print(f"[+] {args.data}")
     d = json.load(open(args.data))
-    colors = {"base": fs.BASELINE, "compass": fs.BRANCH["flat"], "ref": fs.BASELINE_ALT}
+    colors = {"base": fs.BASELINE, "siteseer": fs.BRANCH["flat"], "ref": fs.BASELINE_ALT}
     fig, ax = fs.figure(W_PX, H_PX)
     ys = list(range(len(d["rows"])))[::-1]
     for y, row in zip(ys, d["rows"]):

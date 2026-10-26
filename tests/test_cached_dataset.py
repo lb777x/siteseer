@@ -1,7 +1,7 @@
 import pandas as pd
 import torch
 
-from compass.data.datasets import CachedEmbeddingDataset
+from siteseer.data.datasets import CachedEmbeddingDataset
 
 
 def test_cached_dataset_keys_labels_and_norm(tmp_path):

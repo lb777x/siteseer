@@ -1,6 +1,6 @@
 import torch
 
-from compass.models.probe import ActiveSiteProbe
+from siteseer.models.probe import ActiveSiteProbe
 
 
 def test_state_dict_keys_match_trained_checkpoints():

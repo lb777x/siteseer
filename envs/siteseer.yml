@@ -1,7 +1,7 @@
 # Main environment: ESM-2 embeddings, training, evaluation, statistics, figures, structural ablation, UMAP.
 # Versions as used for the reported results. CUDA 12.1 wheels; they also run on CPU.
-#   conda env create -f envs/compass.yml && conda activate compass && pip install -e .
-name: compass
+#   conda env create -f envs/siteseer.yml && conda activate siteseer && pip install -e .
+name: siteseer
 channels:
   - conda-forge
 dependencies:

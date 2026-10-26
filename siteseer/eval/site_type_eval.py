@@ -4,7 +4,7 @@ The main "any site" output is evaluated as always by linear_probe_eval.py (and c
 with paired_bootstrap.py); this script covers what that one cannot see:
 
   per type      pooled AUPRC/AUROC over the residues the type supervises (masks from
-                compass.data.site_types), and macro AUPRC over proteins with >= 1 positive and
+                siteseer.data.site_types), and macro AUPRC over proteins with >= 1 positive and
                 >= 1 negative of that type
   distinction   among proteins that supervise BOTH types, residues that are catalytic-only vs
                 binding-only: AUROC of telling them apart (catalytic = positive class), scored by
@@ -16,7 +16,7 @@ with paired_bootstrap.py); this script covers what that one cannot see:
                                    the number the type outputs have to beat
 Point estimates plus a protein-level bootstrap CI for the distinction AUROCs.
 
-  python -m compass.eval.site_type_eval --config configs/sitetypes/stage1.yaml --encoder esm_raw \\
+  python -m siteseer.eval.site_type_eval --config configs/sitetypes/stage1.yaml --encoder esm_raw \\
       --probe-checkpoint checkpoints/<run>/best.pt --split test \\
       [--baseline-checkpoint checkpoints/<flat run>/best.pt] \\
       [--save-predictions PATH.pt] [--out-json PATH.json]
@@ -28,11 +28,11 @@ import numpy as np
 import torch
 from sklearn.metrics import average_precision_score, roc_auc_score
 
-from compass.data.datasets import build_dataset
-from compass.data.site_types import TYPE_NAMES
-from compass.embeddings.embedders import embedder_from_config
-from compass.models.probe import load_probe
-from compass.train.train_probe import ENCODERS, load_config
+from siteseer.data.datasets import build_dataset
+from siteseer.data.site_types import TYPE_NAMES
+from siteseer.embeddings.embedders import embedder_from_config
+from siteseer.models.probe import load_probe
+from siteseer.train.train_probe import ENCODERS, load_config
 
 
 def load(path, device):

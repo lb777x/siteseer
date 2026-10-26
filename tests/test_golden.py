@@ -1,6 +1,6 @@
 """Golden tests: the release code reproduces the main model's saved predictions and trains end to end.
 
-Slow (ESM-2 650M on CPU, ~10 min for the 95 M-CSA test proteins); opt in with COMPASS_SLOW=1 and COMPASS_DATA_ROOT.
+Slow (ESM-2 650M on CPU, ~10 min for the 95 M-CSA test proteins); opt in with SITESEER_SLOW=1 and SITESEER_DATA_ROOT.
 """
 import os
 import subprocess
@@ -13,7 +13,7 @@ import torch
 from conftest import need
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-slow = pytest.mark.skipif(os.environ.get("COMPASS_SLOW") != "1", reason="slow; set COMPASS_SLOW=1")
+slow = pytest.mark.skipif(os.environ.get("SITESEER_SLOW") != "1", reason="slow; set SITESEER_SLOW=1")
 
 
 def run(args, cwd):
@@ -32,7 +32,7 @@ def test_main_model_reproduces_saved_test_predictions(data_root, tmp_path):
     ckpt = need(data_root, "checkpoints/main_stage2_mcsa/best.pt")
     saved = torch.load(need(data_root, "results/predictions/main_stage2_mcsa_test.pt"), weights_only=False)
     out = tmp_path / "pred.pt"
-    run(["compass.eval.evaluate", "--config", stage2_config(data_root), "--encoder", "esm_raw",
+    run(["siteseer.eval.evaluate", "--config", stage2_config(data_root), "--encoder", "esm_raw",
          "--probe-checkpoint", ckpt, "--split", "test", "--n-bootstrap", "10", "--device", "cpu",
          "--save-predictions", str(out)], data_root)
     new = torch.load(out, weights_only=False)
@@ -51,8 +51,8 @@ def test_training_runs_and_checkpoint_evaluates(data_root, tmp_path):
     sets = [f"data.train_csv={tmp_path / 'train.csv'}", f"data.valid_csv={tmp_path / 'valid.csv'}",
             f"data.test_csv={tmp_path / 'valid.csv'}", "optim.epochs=2", f"logging.checkpoint_dir={tmp_path}",
             "run_name=smoke"]
-    run(["compass.train.train_probe", "--config", cfg, "--encoder", "esm_raw", "--device", "cpu", "--set", *sets],
+    run(["siteseer.train.train_probe", "--config", cfg, "--encoder", "esm_raw", "--device", "cpu", "--set", *sets],
         data_root)
     assert (tmp_path / "smoke" / "best.pt").exists() and (tmp_path / "smoke" / "final.pt").exists()
-    run(["compass.eval.evaluate", "--config", cfg, "--encoder", "esm_raw", "--device", "cpu", "--split", "test",
+    run(["siteseer.eval.evaluate", "--config", cfg, "--encoder", "esm_raw", "--device", "cpu", "--split", "test",
          "--probe-checkpoint", str(tmp_path / "smoke" / "best.pt"), "--n-bootstrap", "5", "--set", *sets], data_root)

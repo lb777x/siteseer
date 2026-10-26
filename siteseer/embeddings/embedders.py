@@ -10,6 +10,9 @@ import torch
 
 MAX_SEQ_LEN = 1022          # ESM-2's position limit (1024 minus BOS/EOS); used for every encoder
 ESMC_MODEL_ID = "biohub/ESMC-6B"
+# Snapshot used for the reported runs. The ESMC stage-1 cache was extracted in July 2026 from snapshot 45b0fa5d,
+# which reproduces with this one at metric level (same macro AUPRC on a 4,000/1,000-protein linear screen).
+ESMC_REVISION = "af1602ba7406f521b11bf8f81d52af378cde09e4"
 MAIN_NORM_STATS = "data/embeddings_goliath_esm2_l30/norm_stats.pt"
 
 
@@ -36,7 +39,7 @@ def load_esmc_tokenizer():
     """ESMC tokenizer via transformers if available, else esm's EsmSequenceTokenizer (same <cls> ... <eos> framing)."""
     from transformers import AutoTokenizer
     try:
-        return AutoTokenizer.from_pretrained(ESMC_MODEL_ID, trust_remote_code=True)
+        return AutoTokenizer.from_pretrained(ESMC_MODEL_ID, revision=ESMC_REVISION, trust_remote_code=True)
     except (ValueError, OSError) as e:
         print(f"[*] AutoTokenizer unavailable for {ESMC_MODEL_ID} ({type(e).__name__}); using EsmSequenceTokenizer")
     from esm.tokenization import EsmSequenceTokenizer
@@ -46,7 +49,8 @@ def load_esmc_tokenizer():
 def load_esmc(device: torch.device):
     from transformers import AutoModel
     print(f"[*] loading {ESMC_MODEL_ID}...")
-    model = AutoModel.from_pretrained(ESMC_MODEL_ID, dtype=torch.float16, trust_remote_code=True).eval().to(device)
+    model = AutoModel.from_pretrained(ESMC_MODEL_ID, revision=ESMC_REVISION, dtype=torch.float16,
+                                      trust_remote_code=True).eval().to(device)
     return model, load_esmc_tokenizer()
 
 

@@ -1,0 +1,26 @@
+# Main model trained only on EasIFA's own training data (pipeline step 14).
+run_name: easifa_own
+seed: 42
+data:
+  dataset_class: goliath
+  train_csv: dataset/label_diffusion/easifa_own_split_fix1.csv
+  id_column: alphafolddb-id
+  esm_layer: 30
+  norm_stats: data/embeddings_goliath_esm2_l30/norm_stats.pt
+  embedding_dir: data/embeddings_goliath_esm2_l30
+probe:
+  mode: agnostic
+  hidden_dim: 128
+  dropout: 0.2
+  loss: focal
+  focal_alpha: 0.8
+  focal_gamma: 2.0
+optim:
+  lr: 0.001
+  weight_decay: 0.0001
+  epochs: 20
+  batch_size: 8
+logging:
+  log_every_n_steps: 200
+  eval_every_n_epochs: 1
+  checkpoint_dir: checkpoints

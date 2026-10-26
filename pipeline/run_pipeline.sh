@@ -33,5 +33,10 @@ python "$P/08_cluster_exclusion.py" --source-csv $L/cached_dataframe_resplit90_e
 python "$P/09_fix1_datasets.py"
 python "$P/10_fix2_datasets.py"
 python "$P/11_mcsa_kfold.py"
+# comparison sets: EasIFA's M-CSA and Swiss-Prot test sets with its predictions, EasIFA's and Squidly's training data
+python "$P/12_easifa82.py"
+python "$P/13_easifa_swissprot.py"
+python "$P/14_easifa_own_split.py"
+python "$P/15_catalodb_split.py"
 
 sha256sum -c "$P/expected_sha256.txt"

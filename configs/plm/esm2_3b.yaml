@@ -1,0 +1,8 @@
+# ESM-2 3B, last layer (36), 2560-d, not standardised. Overlay on configs/main/*.yaml.
+encoder: esm_raw
+data:
+  esm_model: esm2_t36_3B_UR50D
+  esm_layer: 36
+  embed_dim: 2560
+  norm_stats: null
+  embedding_dir: data/embeddings_goliath_esm2_3b

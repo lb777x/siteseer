@@ -1,0 +1,7 @@
+# ESMC-6B (biohub/ESMC-6B), last hidden state, 2560-d, not standardised. Overlay on configs/main/*.yaml.
+encoder: esmc_raw
+data:
+  esm_layer: null
+  embed_dim: 2560
+  norm_stats: null
+  embedding_dir: data/embeddings_goliath_esmc

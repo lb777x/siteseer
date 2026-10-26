@@ -42,9 +42,26 @@ def apply_overrides(cfg: dict, overrides: list) -> dict:
     return cfg
 
 
-def load_config(path: str, overrides: list = None) -> dict:
-    with open(path) as f:
-        return apply_overrides(yaml.safe_load(f), overrides)
+def merge(base: dict, over: dict) -> dict:
+    out = dict(base)
+    for k, v in (over or {}).items():
+        out[k] = merge(out[k], v) if isinstance(v, dict) and isinstance(out.get(k), dict) else v
+    return out
+
+
+def load_config(paths, overrides: list = None) -> dict:
+    """One or more YAML files merged in order (later files win, e.g. a configs/plm/ overlay), then --set."""
+    cfg = {}
+    for path in [paths] if isinstance(paths, str) else paths:
+        with open(path) as f:
+            cfg = merge(cfg, yaml.safe_load(f))
+    return apply_overrides(cfg, overrides)
+
+
+def resolve_encoder(args, cfg: dict) -> None:
+    args.encoder = args.encoder or cfg.get("encoder", "esm_raw")
+    if args.encoder not in ENCODERS:
+        raise ValueError(f"unknown encoder {args.encoder!r} (expected one of {ENCODERS})")
 
 
 def embed_dim_for(data_cfg: dict, encoder: str) -> int:
@@ -150,9 +167,10 @@ def build_model_and_data(args, cfg, device):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("--config", required=True)
+    ap.add_argument("--config", nargs="+", required=True, help="base config, then overlays")
     ap.add_argument("--set", nargs="*", default=[], metavar="KEY=VALUE", help="override config entries")
-    ap.add_argument("--encoder", "--baseline-encoder", dest="encoder", required=True, choices=ENCODERS)
+    ap.add_argument("--encoder", "--baseline-encoder", dest="encoder", default=None, choices=ENCODERS,
+                    help="default: the config's encoder key, else esm_raw")
     ap.add_argument("--probe-architecture", default="flat", choices=["flat", "graph_v2"])
     ap.add_argument("--structure-root", default=None)
     ap.add_argument("--pretrained-gvp-checkpoint", default=None)
@@ -163,6 +181,7 @@ def main():
     args = ap.parse_args()
 
     cfg = load_config(args.config, args.set)
+    resolve_encoder(args, cfg)
     seed = int(cfg.get("seed", 42))
     random.seed(seed)
     torch.manual_seed(seed)

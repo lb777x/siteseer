@@ -1,0 +1,7 @@
+# ESM-2 650M, last layer (33) with its final LayerNorm, not standardised. Overlay on configs/main/*.yaml.
+encoder: esm_raw
+data:
+  esm_model: esm2_t33_650M_UR50D
+  esm_layer: 33
+  norm_stats: null
+  embedding_dir: data/embeddings_goliath_esm2_l33

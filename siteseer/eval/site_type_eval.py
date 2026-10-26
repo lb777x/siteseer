@@ -18,7 +18,7 @@ from siteseer.data.datasets import build_dataset
 from siteseer.data.site_types import TYPE_NAMES
 from siteseer.embeddings.embedders import embedder_from_config
 from siteseer.models.probe import load_probe
-from siteseer.train.train_probe import ENCODERS, load_config
+from siteseer.train.train_probe import ENCODERS, load_config, resolve_encoder
 
 
 def load(path, device):
@@ -51,7 +51,7 @@ def distinction(rows, key, n_boot, rng):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--config", required=True, help="the run's YAML (data section; probe.n_site_types>0)")
+    ap.add_argument("--config", nargs="+", required=True, help="the run's YAML (data section; probe.n_site_types>0)")
     ap.add_argument("--probe-checkpoint", required=True)
     ap.add_argument("--baseline-checkpoint", default=None)
     ap.add_argument("--split", default="test", choices=["train", "valid", "test"])
@@ -60,11 +60,12 @@ def main():
     ap.add_argument("--save-predictions", default=None)
     ap.add_argument("--out-json", default=None)
     ap.add_argument("--device", default=None)
-    ap.add_argument("--encoder", "--baseline-encoder", dest="encoder", required=True, choices=ENCODERS)
+    ap.add_argument("--encoder", "--baseline-encoder", dest="encoder", default=None, choices=ENCODERS)
     ap.add_argument("--set", nargs="*", default=[], metavar="KEY=VALUE")
     args = ap.parse_args()
 
     cfg = load_config(args.config, args.set)
+    resolve_encoder(args, cfg)
     if cfg["probe"].get("n_site_types", 0) != len(TYPE_NAMES):
         raise SystemExit(f"--config must set probe.n_site_types: {len(TYPE_NAMES)} (it decides the dataset's targets)")
     device = torch.device(args.device) if args.device else torch.device("cuda" if torch.cuda.is_available() else "cpu")

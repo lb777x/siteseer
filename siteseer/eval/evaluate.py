@@ -16,14 +16,14 @@ from siteseer.embeddings.embedders import embedder_from_config
 from siteseer.eval.metrics import bootstrap_ci, find_best_threshold, format_bootstrap_result
 from siteseer.models.probe import load_probe
 from siteseer.train.losses import build_probe_loss
-from siteseer.train.train_probe import ENCODERS, embed_dim_for, load_config, run_epoch
+from siteseer.train.train_probe import ENCODERS, embed_dim_for, load_config, resolve_encoder, run_epoch
 
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("--config", required=True)
+    ap.add_argument("--config", nargs="+", required=True)
     ap.add_argument("--set", nargs="*", default=[], metavar="KEY=VALUE")
-    ap.add_argument("--encoder", "--baseline-encoder", dest="encoder", required=True, choices=ENCODERS)
+    ap.add_argument("--encoder", "--baseline-encoder", dest="encoder", default=None, choices=ENCODERS)
     ap.add_argument("--probe-checkpoint", required=True)
     ap.add_argument("--probe-architecture", default="flat", choices=["flat", "graph_v2"])
     ap.add_argument("--structure-root", default=None)
@@ -37,6 +37,7 @@ def main():
     args = ap.parse_args()
 
     cfg = load_config(args.config, args.set)
+    resolve_encoder(args, cfg)
     data_cfg = cfg["data"]
     device = torch.device(args.device) if args.device else torch.device("cuda" if torch.cuda.is_available() else "cpu")
     filter_ids = None

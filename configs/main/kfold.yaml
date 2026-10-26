@@ -1,0 +1,26 @@
+# Main model, stage 2: M-CSA 5-fold; this file is fold 0, the other folds via --set (see jobs/main_chain.sh).
+run_name: main_kfold0
+seed: 42
+data:
+  train_csv: dataset/mcsa_fine_tune/kfold/fold_0_train.csv
+  valid_csv: dataset/mcsa_fine_tune/kfold/fold_0_valid.csv
+  test_csv: dataset/mcsa_fine_tune/kfold/fold_0_test.csv
+  id_column: alphafolddb-id
+  esm_layer: 30
+  norm_stats: data/embeddings_goliath_esm2_l30/norm_stats.pt
+probe:
+  mode: agnostic
+  hidden_dim: 128
+  dropout: 0.2
+  loss: focal
+  focal_alpha: 0.8
+  focal_gamma: 2.0
+optim:
+  lr: 0.0003
+  weight_decay: 0.0001
+  epochs: 20
+  batch_size: 8
+logging:
+  log_every_n_steps: 20
+  eval_every_n_epochs: 2
+  checkpoint_dir: checkpoints

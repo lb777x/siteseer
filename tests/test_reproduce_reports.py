@@ -122,3 +122,55 @@ def test_squidly_mcsa_lt30(data_root, tmp_path):
     assert got["n_shared_proteins"] == ref["n_shared_proteins"] == 427
     for key, r in ref["metrics"].items():
         assert got["metrics"][key]["ci95"] == pytest.approx(r["ci95"], abs=1e-12), key
+
+
+def test_site_type_distinction(data_root, tmp_path):
+    ref = json.load(open(need(data_root, "results/reports/sitetypes/site_type_eval_stage1_test.json")))
+    env = dict(os.environ, PYTHONPATH=os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    subprocess.run([sys.executable, "-m", "siteseer.eval.site_type_eval", "--from-predictions",
+                    need(data_root, "results/predictions/sitetypes_stage1_types_test.pt"),
+                    "--out-json", str(tmp_path / "out.json")], check=True, env=env, capture_output=True)
+    got = json.load(open(tmp_path / "out.json"))
+    for key in ("any", "catalytic", "binding", "distinction"):
+        assert got[key] == ref[key], key
+    assert round(got["distinction"]["cat-bind"]["auroc"], 3) == 0.994   # reported catalytic-vs-binding AUROC
+
+
+def test_negative_control(data_root, tmp_path):
+    ref = json.load(open(need(data_root, "results/reports/negative_control_figure.json")))
+    runs = {k: need(data_root, f"results/negatives/main_{k}") for k in ("abc", "gold", "pos")}
+    env = dict(os.environ, PYTHONPATH=os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    subprocess.run([sys.executable, "-m", "siteseer.negatives.analyze", "--abc", runs["abc"], "--gold", runs["gold"],
+                    "--pos", runs["pos"], "--gold-csv", need(data_root, "dataset/negatives/negatives_gold.csv"),
+                    "--out-json", str(tmp_path / "out.json")], check=True, env=env, capture_output=True)
+    got = json.load(open(tmp_path / "out.json"))
+    for key in ("threshold", "score_dist", "categories", "G_report_rate_pct"):
+        assert got[key] == ref[key], key
+    assert [(r["n"], r["k"], r["ci_pct"]) for r in got["rejection"]] == [(r["n"], r["k"], r["ci_pct"]) for r in ref["rejection"]]
+    assert [round(got["auroc_G_report_vs"][g]["auroc"], 3) for g in ("mcsa_test", "goliath_test", "reallabels_test")] \
+        == [0.979, 0.979, 0.989]
+
+
+@slow
+def test_p2rank(data_root, tmp_path):
+    env = dict(os.environ, PYTHONPATH=os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    subprocess.run([sys.executable, "-m", "siteseer.comparisons.p2rank", "all", "--out-dir", str(tmp_path)],
+                   check=True, cwd=data_root, env=env, capture_output=True)
+    for f in ("results.json", "learned_results.json", "protein_results.json"):
+        assert_close(json.load(open(tmp_path / f)), json.load(open(need(data_root, f"results/reports/p2rank/{f}"))), f)
+
+
+def assert_close(got, ref, where, rel=1e-9):
+    """Nested JSON equality; floats to a relative tolerance (summation order differs between numpy versions)."""
+    if isinstance(ref, dict):
+        assert set(got) == set(ref), where
+        for k in ref:
+            assert_close(got[k], ref[k], f"{where}/{k}", rel)
+    elif isinstance(ref, list):
+        assert len(got) == len(ref), where
+        for i, (g, r) in enumerate(zip(got, ref)):
+            assert_close(g, r, f"{where}[{i}]", rel)
+    elif isinstance(ref, float):
+        assert got == pytest.approx(ref, rel=rel, abs=1e-12), where
+    else:
+        assert got == ref, where

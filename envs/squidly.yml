@@ -1,0 +1,19 @@
+# Squidly environment (comparison only): the released Squidly 3B ensemble (Rieger et al.), run through its own
+# ensemble script. Create with envs/install_squidly.sh, which adds squidly without its pinned dependency set and
+# downloads the weights.
+name: compass-squidly
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11.17
+  - pip
+  - pip:
+      - --extra-index-url https://download.pytorch.org/whl/cu121
+      - torch==2.5.1+cu121
+      - fair-esm==2.0.0
+      - numpy==2.0.2
+      - pandas==3.0.6
+      - biopython==1.88
+      - psutil==7.2.2
+      - tqdm==4.70.1
+      - huggingface_hub==2.2.0

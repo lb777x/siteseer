@@ -1,0 +1,12 @@
+diff --git a/datasets/parse_chi.py b/datasets/parse_chi.py
+index ec06d8c..55031fa 100644
+--- a/datasets/parse_chi.py
++++ b/datasets/parse_chi.py
+@@ -88,6 +88,7 @@ def get_dihedral_indices(onehot_sequence):
+ 
+ def _get_chi_angles(coords, indices):
+     X = coords
++    indices = np.nan_to_num(indices, nan=0.0, posinf=0.0, neginf=0.0)
+     Y = indices.astype(int)
+     N = coords.shape[0]
+     mask = np.isnan(indices)

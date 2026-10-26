@@ -38,5 +38,6 @@ python "$P/12_easifa82.py"
 python "$P/13_easifa_swissprot.py"
 python "$P/14_easifa_own_split.py"
 python "$P/15_catalodb_split.py"
+python "$P/16_squidly_mcsa.py"
 
 sha256sum -c "$P/expected_sha256.txt"

@@ -1,12 +1,10 @@
-"""Evaluate a trained probe on one split: pooled and macro metrics with protein-level bootstrap CIs.
+"""Evaluate a probe on one split: pooled and macro metrics with protein-level bootstrap CIs.
 
   python -m siteseer.eval.evaluate --config configs/main/stage2_mcsa.yaml --encoder esm_raw \\
-      --probe-checkpoint checkpoints/<run>/best.pt --split test [--calibrate-threshold] \\
-      [--filter-ids-file ids.txt] [--save-predictions results/<name>.pt]
+      --probe-checkpoint checkpoints/main_stage2_mcsa/best.pt --split test [--save-predictions out.pt]
 
---save-predictions writes {"protein_ids", "logits", "labels"} (per-protein tensors), the input format of
-siteseer.eval.paired_bootstrap and siteseer.eval.ensemble. --calibrate-threshold additionally fits the pooled-F1
-threshold on the validation split and reports the requested split at that threshold.
+--calibrate-threshold also reports the split at the pooled-F1-optimal threshold of the validation split.
+--save-predictions writes per-protein logits and labels for paired_bootstrap and ensemble.
 """
 import argparse
 

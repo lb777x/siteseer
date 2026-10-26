@@ -1,12 +1,7 @@
-"""Step 06: the labelled pool with the new split.
+"""Step 06: the labelled pool with the new split: rows of step 03 followed by the new rows of step 04, dataset_flag
+from the step-05 mapping. --exclude-ids-file flags proteins 'excluded_easifa_test'.
 
-The pool rows are EasIFA's rows with the upgraded labels of step 03 (cached_dataframe_all_sources_labels.csv)
-followed by the new M3Site/BioLiP rows of step 04 (the rows of cached_dataframe_expanded.csv beyond EasIFA's), in
-this order; row positions are the keys of the embedding caches. The split mapping of step 05 then replaces
-dataset_flag for every clustered protein; others keep their flag. With --exclude-ids-file, those proteins get
-dataset_flag 'excluded_easifa_test' (step 07).
-
-  python pipeline/06_apply_split.py         # -> dataset/label_diffusion/cached_dataframe_final_resplit90.csv
+  python pipeline/06_apply_split.py
 """
 import argparse
 import os

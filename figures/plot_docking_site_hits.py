@@ -1,14 +1,8 @@
-"""Docking guided by the predicted site: share of rank-1 poses at the annotated site.
+"""Share of rank-1 DiffDock poses with a heavy ligand atom within 4 A of an annotated site residue: DiffDock alone,
+the two crops, SiteSeer re-ranking of the 10 whole-structure poses, and the best of 10 as upper bound. Differences
+with a paired bootstrap CI (2,000 draws). Data: figures/data/docking_site_hits.json (rebuilt with --csv).
 
-A pose hits when a heavy ligand atom lies within 4 A of a heavy atom of an annotated site residue. Rows: DiffDock on
-the whole structure (grey), the two crops and SiteSeer re-ranking of the whole-structure run's 10 poses (pose
-closest to the predicted site centroid; teal), and the best of the 10 poses as upper bound (light grey). Paired over
-the proteins with a pose in every condition; differences to DiffDock alone with a paired bootstrap CI (2,000 draws
-over proteins, seed 42).
-
-With --csv the data file is rebuilt from the site-accuracy table of siteseer.docking.site_accuracy.
-
-  python figures/plot_docking_site_hits.py [--csv results/docking/site_accuracy.csv]
+  python figures/plot_docking_site_hits.py [--csv site_accuracy.csv]
 """
 import argparse
 import json

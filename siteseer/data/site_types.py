@@ -1,17 +1,8 @@
-"""Per-residue site-type targets (catalytic, binding) with masks, for the site-type outputs of the probe.
+"""Targets and masks for the two site-type outputs (catalytic, binding).
 
-The main output stays "any site". The two type outputs are auxiliary, and each label source only supervises the
-types it knows:
-
-  source                                 catalytic                     binding
-  goliath_original (UniProt via EasIFA)  ACT_SITE groups               BINDING groups   (SITE residues masked)
-  m3site, m3site_new                     all groups                    masked
-  biolip_* (BioLiP catalytic column)     all groups                    masked
-  mcsa_blast_homology, M-CSA             all groups                    masked
-
-Positive-anchored: a type is supervised for a protein only if the protein has at least one residue of that type.
-Within a supervised protein, residues outside the type's groups are negatives, including residues of the other type.
-A SITE residue that is also in a BINDING or ACT_SITE group keeps that type's positive label.
+Only EasIFA's original rows carry both types (UniProt ACT_SITE = catalytic, BINDING = binding, SITE masked); M-CSA,
+M3Site and BioLiP rows supervise the catalytic output only. A type is supervised for a protein only if the protein has
+a residue of that type; residues of the other type then count as negatives.
 """
 import ast
 from typing import Optional

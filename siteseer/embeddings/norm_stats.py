@@ -1,9 +1,6 @@
-"""Per-dimension mean / std of an embedding cache, from training proteins only.
+"""Per-dimension mean and standard deviation of an embedding cache, from 2,000 random training proteins (seed 42).
 
-Written to <cache>/norm_stats.pt ({"mean", "std", "n_proteins", "n_residues", "csv", "seed"}) and applied on loading
-by siteseer.embeddings.embedders.apply_norm (data.norm_stats in the configs; also the esm2_650m_l30 embedder used for
-inference): the same standardisation the linear layer screens used (StandardScaler), with statistics fixed once so
-that training, evaluation and inference see identical inputs.
+Written once to <cache>/norm_stats.pt and never overwritten, so training, evaluation and inference use the same values.
 
   python -m siteseer.embeddings.norm_stats --cache-dir data/embeddings_goliath_esm2_l30
 """

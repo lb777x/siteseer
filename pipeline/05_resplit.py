@@ -1,15 +1,10 @@
-"""Step 05: new train/valid/test split of the (extended) Goliath pool by 90%-identity clustering.
+"""Step 05: train/valid/test split by 90%-identity clustering of all unique proteins.
 
-EasIFA's inherited split (80% CD-HIT) leaks between valid and test, and 102 ids carried two split flags at once.
-Here every unique protein is clustered with `mmseqs easy-cluster --min-seq-id 0.9 -c 0.8 --cov-mode 0`, and whole
-clusters are assigned to train/valid/test (target 94.3 / 4.1 / 1.6 %) by a seeded greedy rule: clusters sorted by
-size (ties broken by a seeded shuffle), each to the split furthest below its target. Every row of a protein gets
-the same flag; row order and count are unchanged, so row-keyed embedding caches stay valid.
+`mmseqs easy-cluster --min-seq-id 0.9 -c 0.8 --cov-mode 0`; whole clusters go to the split furthest below its target
+(94.3 / 4.1 / 1.6%), largest first, ties broken by a seeded shuffle. Row order is kept (embedding-cache keys).
+--exclude-ids-file leaves proteins out of the clustering.
 
---exclude-ids-file removes proteins from the clustering input entirely (used for the split without EasIFA's 853
-test proteins, step 07); their rows keep their old flag here and are flagged explicitly by step 06.
-
-  python pipeline/05_resplit.py                       # production split -> data/pipeline/resplit/
+  python pipeline/05_resplit.py
 """
 import argparse
 import os

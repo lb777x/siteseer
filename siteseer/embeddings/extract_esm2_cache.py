@@ -1,15 +1,10 @@
-"""ESM-2 embedding cache (650M or 3B), any layer: <out-dir>/row_<key>.pt with {"embedding": [L, d] fp16}, key = the row
-in cached_dataframe_final_resplit90.csv (or `_original_row_index`), sequences capped at 1,022 residues, BOS/EOS stripped.
+"""ESM-2 embedding cache: <out-dir>/row_<key>.pt with {"embedding": [L, d] fp16}, not standardised.
 
-Only the rows the given training CSVs read (their train/valid/test splits) are computed; rows with an identical
-sequence are computed once and hard-linked. Resumable: existing files are skipped. Stored RAW -- intermediate layers
-come out of fair-esm without the final LayerNorm, so standardisation happens on loading, from the per-dimension
-statistics written by siteseer.embeddings.norm_stats (data.norm_stats in the configs).
+Covers the train/valid/test rows of the given CSVs; the key is the row in cached_dataframe_final_resplit90.csv (or
+`_original_row_index`). Identical sequences are hard-linked; existing files are skipped.
 
-  python -u -m siteseer.embeddings.extract_esm2_cache --layer 30 --out-dir data/embeddings_goliath_esm2_l30
-  python -u -m siteseer.embeddings.extract_esm2_cache --model esm2_t36_3B_UR50D --layer 36 --out-dir data/embeddings_goliath_esm2_3b
-  python -u -m siteseer.embeddings.extract_esm2_cache --layer 30 --own-sequences \
-      --need-csv dataset/catalodb_squidly/catalodb_squidly.csv --out-dir data/embeddings_catalodb_esm2_l30
+  python -m siteseer.embeddings.extract_esm2_cache --layer 30 --out-dir data/embeddings_goliath_esm2_l30
+  python -m siteseer.embeddings.extract_esm2_cache --model esm2_t36_3B_UR50D --layer 36 --out-dir data/embeddings_goliath_esm2_3b
 """
 import argparse
 import os
@@ -30,8 +25,7 @@ def main():
     ap.add_argument("--out-dir", required=True)
     ap.add_argument("--need-csv", nargs="+", default=NEED)
     ap.add_argument("--own-sequences", action="store_true",
-                    help="take each key's sequence from the --need-csv row itself (a CSV with its own key space, e.g. "
-                         "dataset/catalodb_squidly/catalodb_squidly.csv) instead of cached_dataframe_final_resplit90.csv")
+                    help="read sequences from the --need-csv rows (CSV with its own keys, e.g. CataloDB)")
     args = ap.parse_args()
     os.makedirs(args.out_dir, exist_ok=True)
     need, own = set(), {}

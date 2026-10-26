@@ -1,12 +1,7 @@
-"""Parsing of the `site_labels` column shared by every dataset CSV.
+"""Parse the `site_labels` column: groups of 1-based residue numbers.
 
-`site_labels` is a list of residue groups, e.g. `[[68], [71], [128]]`, with 1-based residue numbers. How a group with
-more than one element is read depends on the row's `label_source`:
-
-* EasIFA's original rows (`goliath_original`, or no `label_source` column) use EasIFA's range convention:
-  `[b, e]` is the inclusive range b..e and a group with more than two elements is an error
-  (EasIFA `dataset_preprocess/pdb_preprocess_utils.py`, `get_active_site_binary`).
-* Every other source (BioLiP, M3Site, M-CSA) lists the residues of one site, read element by element.
+EasIFA's original rows (label_source 'goliath_original' or missing) follow EasIFA's range convention, [b, e] = residues
+b..e; groups of other sources (M-CSA, M3Site, BioLiP) list the residues of one site.
 """
 import ast
 from typing import Optional

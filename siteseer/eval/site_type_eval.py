@@ -1,25 +1,11 @@
-"""Evaluate the site-type outputs (catalytic, binding) of a probe trained with probe.n_site_types>0.
+"""Evaluate the site-type outputs of a probe trained with probe.n_site_types > 0.
 
-The main "any site" output is evaluated as always by linear_probe_eval.py (and compared to Flat
-with paired_bootstrap.py); this script covers what that one cannot see:
-
-  per type      pooled AUPRC/AUROC over the residues the type supervises (masks from
-                siteseer.data.site_types), and macro AUPRC over proteins with >= 1 positive and
-                >= 1 negative of that type
-  distinction   among proteins that supervise BOTH types, residues that are catalytic-only vs
-                binding-only: AUROC of telling them apart (catalytic = positive class), scored by
-                  * cat - bind     the type outputs' logit difference
-                  * cat            the catalytic output alone
-                  * any            the main output (reference: trained to call both "site")
-                  * baseline any   the main output of --baseline-checkpoint (e.g. the Flat model),
-                                   which may already rank catalytic residues above binding ones;
-                                   the number the type outputs have to beat
-Point estimates plus a protein-level bootstrap CI for the distinction AUROCs.
+Per type: pooled AUPRC/AUROC and macro AUPRC over the residues the type supervises. Distinction: AUROC of
+catalytic-only vs binding-only residues in proteins that supervise both, from the type outputs (catalytic minus
+binding), the catalytic output, the main output and the main output of --baseline-checkpoint, with protein-level CIs.
 
   python -m siteseer.eval.site_type_eval --config configs/sitetypes/stage1.yaml --encoder esm_raw \\
-      --probe-checkpoint checkpoints/<run>/best.pt --split test \\
-      [--baseline-checkpoint checkpoints/<flat run>/best.pt] \\
-      [--save-predictions PATH.pt] [--out-json PATH.json]
+      --probe-checkpoint checkpoints/<run>/best.pt --split test [--baseline-checkpoint checkpoints/<flat run>/best.pt]
 """
 import argparse
 import json

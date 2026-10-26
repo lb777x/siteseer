@@ -1,14 +1,8 @@
-"""Frozen protein language model embedders: one interface for training, evaluation and inference.
+"""Frozen language-model embedders, shared by training, evaluation and inference.
 
-An embedder turns a protein sequence into a per-residue matrix [L, dim] (float32, CPU), BOS/EOS stripped, for
-sequences of at most MAX_SEQ_LEN residues (callers truncate).
-
-  ESM2Embedder   fair-esm ESM-2 (650M or 3B), any layer, optional per-dimension standardisation
-                 (statistics from siteseer.embeddings.norm_stats; needed for intermediate layers, which fair-esm
-                 returns without the final LayerNorm)
-  ESMCEmbedder   ESMC-6B (biohub/ESMC-6B via transformers), last hidden state, fp16 weights
-
-Named presets (get_embedder): esm2_650m_l30 (the main model's input), esm2_650m (layer 33), esm2_3b, esmc_6b.
+ESM2Embedder: fair-esm ESM-2 at any layer, optionally standardised per dimension (intermediate layers lack the final
+LayerNorm). ESMCEmbedder: ESMC-6B, last hidden state. Both return [L, d] float32 on CPU without BOS/EOS.
+Presets: esm2_650m_l30 (main model), esm2_650m, esm2_3b, esmc_6b.
 """
 from typing import Dict, Optional
 
@@ -39,8 +33,7 @@ def load_esm2(device: torch.device, name: str = "esm2_t33_650M_UR50D"):
 
 
 def load_esmc_tokenizer():
-    """biohub/ESMC-6B registers no tokenizer class; use the transformers route if the installed `esm` package
-    provides one, otherwise EvolutionaryScale's EsmSequenceTokenizer (same <cls> ... <eos> framing)."""
+    """ESMC tokenizer via transformers if available, else esm's EsmSequenceTokenizer (same <cls> ... <eos> framing)."""
     from transformers import AutoTokenizer
     try:
         return AutoTokenizer.from_pretrained(ESMC_MODEL_ID, trust_remote_code=True)

@@ -1,14 +1,11 @@
-"""Train a probe on frozen language-model embeddings against per-residue site labels.
+"""Train a probe on frozen embeddings.
 
   python -m siteseer.train.train_probe --config configs/main/stage2_mcsa.yaml --encoder esm_raw \\
-      --init-probe-checkpoint checkpoints/<stage-1.5 run>/best.pt [--set seed=43 run_name=..._seed43]
+      --init-probe-checkpoint checkpoints/main_stage15/best.pt [--set seed=43 run_name=main_stage2_mcsa_seed43]
 
-Encoders: `esm_raw` (ESM-2, layer and standardisation from data.esm_model / esm_layer / norm_stats) and `esmc_raw`
-(ESMC-6B). Probe architectures: `flat` (siteseer.models.probe) and `graph_v2` (the structural ablation,
-siteseer.structural; needs --structure-root or data.structure_root and usually --pretrained-gvp-checkpoint).
-One optimizer step per protein; validation every logging.eval_every_n_epochs epochs; best.pt is the checkpoint with
-the best validation AUPRC of the main output, final.pt the last one, latest.pt (with --checkpoint-every-n-steps) a
-mid-epoch state for --resume-from.
+AdamW with one step per protein and gradient clipping at 1.0; the learning rate halves after two validation checks
+without improvement. best.pt has the best validation AUPRC of the main output; latest.pt (--checkpoint-every-n-steps)
+allows --resume-from.
 """
 import argparse
 import os

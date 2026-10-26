@@ -1,11 +1,7 @@
-"""Rebuild data/external/m3site/m3site_sequences_fetched.json from UniProt (optional).
+"""Fetch UniProt sequences of M3Site proteins missing from M3Site's split tables (batches of 300). Documents how
+the frozen copy in the data release was made; a new fetch will differ as UniProt changes.
 
-The pipeline uses the frozen copy from the data release (00_download.py). This script shows how it was made: the
-sequences of all M3Site proteins (label.json) that are not in M3Site's split tables are fetched from the UniProt REST
-API in batches of 300. UniProt changes over time (merged or obsolete entries, sequence versions), so a fresh fetch
-will not match the frozen copy exactly.
-
-  python pipeline/fetch_m3site_sequences.py [--out data/external/m3site/m3site_sequences_fetched.json]
+  python pipeline/fetch_m3site_sequences.py
 """
 import argparse
 import json

@@ -1,9 +1,6 @@
-"""Per-residue classification metrics with protein-level bootstrap confidence intervals.
-
-Pooled (micro): one confusion matrix over all residues. Macro: the metric per protein, averaged over proteins
-(EasIFA's convention). Precision, recall, F1 and MCC use a probability threshold (0.5 unless calibrated on the
-validation split); AUPRC is threshold-free and is the primary metric. Bootstrap resamples proteins, not residues,
-because residues of one protein are not independent.
+"""Per-residue metrics. Pooled: one confusion matrix over all residues; macro: per protein, then averaged.
+AUPRC is threshold-free, the other metrics use a probability threshold (0.5 unless calibrated). Bootstrap CIs
+resample proteins.
 """
 from typing import Optional
 

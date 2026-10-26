@@ -1,15 +1,9 @@
-"""Step 08: flag training rows that share a 90%-identity cluster (cluster map of step 05) with protected proteins.
+"""Step 08: flag training rows in the same 90%-identity cluster (step 05 map) as protected proteins.
 
-Every training row whose protein is in the same cluster as a protected protein gets dataset_flag --flag, so close
-homologs of evaluation proteins leave the training split, not just the exact ids. Run twice for the structural
-lineage: M-CSA valid+test (flag excluded_mcsa_cluster90), then EasIFA's test set (excluded_easifa_test_cluster90),
-which gives cached_dataframe_resplit90_fully_excl.csv.
+Applied twice: M-CSA valid+test (excluded_mcsa_cluster90), then EasIFA's test set (excluded_easifa_test_cluster90).
 
-  python pipeline/08_cluster_exclusion.py --source-csv IN --out-csv OUT --flag excluded_mcsa_cluster90 \\
-      --protect-csv dataset/mcsa_fine_tune/normal_mcsa/valid_dataset/mcsa_valid.csv \\
-                    dataset/mcsa_fine_tune/normal_mcsa/test_dataset/mcsa_test.csv
-  python pipeline/08_cluster_exclusion.py --source-csv IN --out-csv OUT --flag excluded_easifa_test_cluster90 \\
-      --protect-ids data/pipeline/easifa_test_protein_ids.txt
+  python pipeline/08_cluster_exclusion.py --source-csv IN --out-csv OUT --flag NAME \\
+      [--protect-csv CSV ...] [--protect-ids IDS.txt]
 """
 import argparse
 import os

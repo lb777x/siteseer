@@ -1,10 +1,7 @@
-"""Shared helpers for the data pipeline (pipeline/NN_*.py): default paths of the release data layout and tool calls.
+"""Paths of the data layout and tool wrappers shared by the pipeline steps (run from the data root).
 
-Layout (relative to the working directory, the data root):
-  dataset/ec_site_dataset/.../  dataset/mcsa_fine_tune/   EasIFA's dataset (00_download_easifa.py)
-  data/external/                                         other downloaded sources (M3Site, BioLiP2)
-  data/pipeline/                                         intermediate results (BLAST/MMseqs2 outputs, id lists)
-  dataset/label_diffusion/                               the training CSVs the configs read
+dataset/ holds EasIFA's data and the training CSVs (dataset/label_diffusion/), data/external/ other downloaded
+sources, data/pipeline/ intermediate results.
 """
 import os
 import shutil

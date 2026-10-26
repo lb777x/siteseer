@@ -1,7 +1,4 @@
-"""Step 07: the 853 proteins of EasIFA's Swiss-Prot test set (E-RXN ASA), one UniProt id per line, sorted.
-
-These proteins are kept out of every training split (steps 05/06 with --exclude-ids-file, then step 09), so EasIFA
-can be compared on its own test set without leakage. EasIFA writes some ids with a trailing ';', which is removed.
+"""Step 07: ids of the 853 proteins of EasIFA's Swiss-Prot test set, kept out of all training splits.
 
   python pipeline/07_easifa_test_ids.py
 """

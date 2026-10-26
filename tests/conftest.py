@@ -1,7 +1,7 @@
 """Shared test fixtures.
 
 Tests that need the processed data, checkpoints and saved predictions run only when SITESEER_DATA_ROOT points at a
-directory laid out like the Zenodo bundle (dataset/, data/, checkpoints/, results/); they are skipped otherwise.
+directory laid out like the data release (dataset/, data/, checkpoints/, results/); they are skipped otherwise.
 They read from it and never write into it.
 """
 import os

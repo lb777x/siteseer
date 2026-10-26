@@ -1,11 +1,7 @@
-"""Step 11: homology-aware 5-fold cross-validation over the whole M-CSA pool (train + valid + test, 962 proteins).
+"""Step 11: 5-fold cross-validation over all 962 M-CSA proteins. 90%-identity clusters (MMseqs2, as in step 05)
+are assigned whole to folds; fold i tests on fold i, validates on fold i+1 and trains on the rest.
 
-The pool is clustered at 90% identity (`mmseqs easy-cluster --min-seq-id 0.9 -c 0.8 --cov-mode 0`) and whole
-clusters are assigned to five folds by the same seeded greedy rule as step 05 (largest cluster first, to the fold
-furthest below one fifth). Fold i: test = fold i, valid = fold i+1, train = the other three. Every protein is
-tested exactly once, out of fold.
-
-  python pipeline/11_mcsa_kfold.py         # -> dataset/mcsa_fine_tune/kfold/fold_{0..4}_{train,valid,test}.csv
+  python pipeline/11_mcsa_kfold.py
 """
 import argparse
 import os

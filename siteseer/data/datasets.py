@@ -1,15 +1,9 @@
-"""Labelled per-residue datasets on frozen language-model embeddings.
+"""Per-residue datasets on frozen language-model embeddings.
 
-Two kinds, same item schema ({"embedding": [L, d], "labels": [L], "protein_id": str}, plus "type_targets" /
-"type_mask" [L, 2] with site types):
-
-  LiveEmbeddingDataset    computes embeddings with an Embedder at construction (M-CSA scale, < 1,000 proteins)
-                          and keeps them in memory
-  CachedEmbeddingDataset  reads precomputed embeddings `<embedding_dir>/row_<key>.pt` lazily (Goliath scale);
-                          the key is the row's `_original_row_index` if present, else its row position, i.e. the
-                          row in cached_dataframe_final_resplit90.csv
-
-`site_labels` index the sequence 1-based; sequences are truncated to 1,022 residues.
+LiveEmbeddingDataset embeds sequences at construction (M-CSA scale). CachedEmbeddingDataset reads
+<embedding_dir>/row_<key>.pt on access (Goliath scale); the key is `_original_row_index` if present, else the row
+position. Items: embedding [L, d], labels [L], protein_id, and type_targets / type_mask [L, 2] with site types.
+Sequences are truncated to 1,022 residues.
 """
 import os
 from typing import Optional
@@ -81,8 +75,7 @@ class CachedEmbeddingDataset(Dataset):
                  id_column: str = "alphafolddb-id", filter_ids: Optional[set] = None, label: str = "",
                  resample_on_error: bool = False, norm_stats: Optional[str] = None,
                  with_site_types: bool = False):
-        # resample_on_error only for the training split: in evaluation a substituted neighbour would be scored
-        # under the wrong protein id and labels, so there a corrupted cache file raises
+        # training only: in evaluation a corrupted file must fail, not be replaced by a neighbour
         self.resample_on_error = resample_on_error
         self.with_site_types = with_site_types
         self.stats = load_norm_stats(norm_stats)

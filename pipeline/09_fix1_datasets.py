@@ -1,18 +1,8 @@
-"""Step 09 (fix1): the stage-1 and stage-1.5 training CSVs, merging both lineages and removing M-CSA from them.
+"""Step 09: stage-1 and stage-1.5 training CSVs.
 
-Inputs, row-aligned (same 126,797 rows in the same order, so row-keyed embedding caches stay valid):
-  labels  dataset/label_diffusion/cached_dataframe_final_resplit90.csv   upgraded labels (step 06)
-  split   dataset/label_diffusion/cached_dataframe_resplit90_fully_excl.csv   split without EasIFA's test set and
-          without M-CSA / EasIFA-test cluster members in train (step 08)
-
-  1. labels from the first file, dataset_flag from the second
-  2. duplicate ids with conflicting labels: rows of an id that has a curated (non goliath_original) row take that
-     row's label columns (loaders keep the first row of an id)
-  3. M-CSA exclusion by sequence: `mmseqs easy-search --min-seq-id 0.9 -c 0.8 --cov-mode 0` of the whole M-CSA pool
-     (train+valid+test, so one stage-1/1.5 chain serves the single split and every K-fold fold) against every
-     stage-1 protein; every hit and every exact id gets dataset_flag 'excluded_mcsa_homolog90' in all splits
-  4. stage 1.5 = rows with label_source != goliath_original, with _original_row_index (the cache key)
-  5. a JSON report with all counts
+Labels from step 06, split from step 08 (row-aligned). Duplicate ids with conflicting labels take the curated label.
+Every protein of the M-CSA pool (train+valid+test) and every >= 90% homolog (`mmseqs easy-search --min-seq-id 0.9
+-c 0.8 --cov-mode 0`) is flagged 'excluded_mcsa_homolog90' in all splits. Stage 1.5 = rows with curated labels.
 
   python pipeline/09_fix1_datasets.py
 """

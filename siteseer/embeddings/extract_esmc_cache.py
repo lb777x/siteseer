@@ -1,6 +1,4 @@
-"""ESMC-6B embedding cache for a dataset CSV, in the layout CachedEmbeddingDataset reads:
-<out-dir>/row_<_original_row_index>.pt with {"embedding": [L, 2560] fp16}, last hidden state without BOS/EOS,
-truncated to 1,022 residues (siteseer.embeddings.embedders.ESMCEmbedder). Resumable: existing files are skipped.
+"""ESMC-6B embedding cache for a dataset CSV: <out-dir>/row_<_original_row_index>.pt with {"embedding": [L, 2560] fp16}.
 
   python -m siteseer.embeddings.extract_esmc_cache --csv dataset/label_diffusion/cached_dataframe_fully_excl_fix2.csv \\
       --out-dir data/embeddings_goliath_esmc

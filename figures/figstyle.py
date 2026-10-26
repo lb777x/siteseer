@@ -1,13 +1,4 @@
-"""Shared style for all figures: palette, font sizes, axes, and small drawing helpers.
-
-    import figstyle as fs
-    fig, ax = fs.figure(876, 420)          # target size in slide pixels (1920 x 1080 canvas)
-    ax.bar(...)
-    fs.finish(ax, ylabel="AUPRC")
-    fs.save(fig, "thesis_example.png")
-
-Every colour and font size in a plot script comes from here.
-"""
+"""Shared figure style: palette, font sizes and drawing helpers. Plot scripts take every colour and size from here."""
 from __future__ import annotations
 
 import warnings

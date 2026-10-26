@@ -1,16 +1,10 @@
-"""Step 00: download the raw sources into the data root and verify their SHA-256 checksums.
+"""Step 00: download the raw sources and verify their SHA-256 checksums.
 
-  EasIFA dataset (Wang et al., Nat. Commun. 2024; github.com/wangxr0526/EasIFA, MIT licence): dataset.zip with the
-      Goliath pool, its BLAST database, the Swiss-Prot test set and the M-CSA splits -> dataset/
-  M3Site labels and split tables (Gift-OYS/M3Site, commit 42b730a)                     -> data/external/m3site/
-  Frozen copies from the SiteSeer data release (sources that change over time):
-      BioLiP_nr.txt (BioLiP2, zhanggroup.org/BioLiP)                                  -> data/external/biolip/
-      m3site_sequences_fetched.json (UniProt sequences of M3Site proteins)             -> data/external/m3site/
+EasIFA's dataset.zip (Goliath pool, BLAST database, Swiss-Prot test set, M-CSA splits; MIT licence) and the M3Site
+tables (commit 42b730a) come from their original sources. BioLiP_nr.txt and the UniProt sequences of M3Site proteins
+change over time and come as frozen copies from the SiteSeer data release.
 
   python pipeline/00_download.py [--only easifa m3site release]
-
-Every file is checked against the checksum of the copy the reported results were built from; a mismatch stops the
-script. Existing files with the right checksum are not downloaded again.
 """
 import argparse
 import hashlib

@@ -1,10 +1,5 @@
-"""Docking with predicted crops: DiffDock confidence and runtime against docking the whole structure.
-
-Two units, two panels: (A) difference in DiffDock's confidence, (B) runtime saving in %, per crop condition, each a
-point with its paired 95% bootstrap CI over proteins; the zero line is docking the whole structure. Every condition
-ran on the same node per protein, so the runtime comparison is hardware-matched.
-
-Data: figures/data/docking_paired.json, written by siteseer.docking.paired_bootstrap from the comparison table.
+"""Docking on predicted crops vs. the whole structure: (A) change in DiffDock confidence, (B) runtime saving, each
+with a paired 95% bootstrap CI over proteins (same node per protein). Data: figures/data/docking_paired.json.
 
   python figures/plot_docking_runtime_confidence.py
 """

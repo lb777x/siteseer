@@ -1,28 +1,9 @@
-"""Paired bootstrap between two models' saved predictions on the same proteins.
+"""Paired bootstrap of two models' saved predictions on the proteins both scored.
 
-Both inputs are --save-predictions files from siteseer.eval.evaluate (or several
-of them, e.g. one per K-fold fold, concatenated). The comparison is restricted
-to the protein ids present in BOTH sets, so a branch that drops proteins (no
-structure, sequence mismatch) is compared on exactly the proteins it did score,
-never on a different subset per side.
+  python -m siteseer.eval.paired_bootstrap --a A_fold*.pt --b B_fold*.pt [--n-bootstrap 2000] [--out-json out.json]
 
-Resampling unit: one protein. In each of the n_bootstrap draws the SAME
-resampled protein set is scored for A and for B, and the difference B - A is
-recorded -- a paired CI on the delta, which is much tighter than two separate
-CIs when the two models agree on which proteins are hard. Reports:
-  * pooled (one confusion matrix over all residues) and macro (per-protein
-    metric averaged over proteins) AUPRC, F1, MCC, precision, recall
-  * for each: point estimate A, point estimate B, delta with 95% CI, and the
-    fraction of draws with delta > 0 (a one-sided bootstrap p-value is
-    1 - that fraction)
-Thresholded metrics use --threshold-a / --threshold-b (default 0.5 each), so
-each side can be evaluated at its own valid-calibrated threshold.
-
-Usage:
-  python -m siteseer.eval.paired_bootstrap \\
-      --a results/flat_test_preds.pt --label-a flat \\
-      --b results/structural_test_preds.pt --label-b structural \\
-      [--threshold-a 0.55 --threshold-b 0.41] [--n-bootstrap 1000] [--out-json PATH]
+Each draw resamples proteins once and scores both models on that sample. Reported per metric (pooled and macro
+AUPRC, F1, MCC, precision, recall): both point estimates, B - A with its 95% CI, and the share of draws with B > A.
 """
 import argparse
 import json
@@ -59,10 +40,7 @@ def pooled(preds, ids, threshold):
 
 
 def confusion_counts(preds, ids, threshold):
-    """Per protein: (tp, fp, fn, tn) at this threshold. Pooled precision/recall/F1/MCC are
-    exact functions of the SUMS of these, so a bootstrap draw only needs to add up n rows
-    instead of recomputing every metric over all residues (140 ms -> microseconds at
-    962 proteins). AUPRC is not decomposable this way and is still computed per draw."""
+    """Per protein (tp, fp, fn, tn) at the threshold; pooled metrics of a draw are sums of rows."""
     rows = np.empty((len(ids), 4))
     for k, i in enumerate(ids):
         y = preds[i][1].numpy().astype(bool)
@@ -86,14 +64,9 @@ def pooled_auprc(preds, ids):
 
 
 class WeightedAUPRC:
-    """Pooled AUPRC of a bootstrap draw without re-concatenating and re-sorting all residues.
-
-    A draw only changes how often each protein occurs. Average precision with integer sample weights
-    equals average precision on the duplicated samples (duplicates share their score, so they fall
-    into the same tie group), so: sort all residues of the n proteins once, then per draw weight
-    every residue by its protein's draw count and evaluate the step-wise AP at the distinct scores --
-    the same definition sklearn's average_precision_score uses. ~280k residues: milliseconds per draw
-    instead of concatenating and sorting twice. Checked against pooled_auprc() on the first draws (main)."""
+    """Pooled AUPRC of a draw from protein multiplicities, on one pre-sorted residue list (equal to
+    average_precision_score on the duplicated residues; checked on the first draws).
+    """
 
     def __init__(self, preds, ids):
         s = np.concatenate([preds[i][0].numpy().astype(np.float64) for i in ids])
@@ -126,14 +99,10 @@ def main():
     p.add_argument("--n-bootstrap", type=int, default=1000)
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--restrict-ids", default=None,
-                   help="file of protein ids (one per line); the comparison is further restricted to "
-                        "these, e.g. the proteins one side never saw in training")
+                   help="restrict the comparison to these protein ids (one per line)")
     p.add_argument("--drop-label-mismatch", action="store_true",
-                   help="proteins whose label vectors differ between the two sides are left out "
-                        "(and counted) instead of aborting. Needed for M-CSA: the structural "
-                        "dataset embeds the sequence parsed from the STRUCTURE, flat the UniProt "
-                        "sequence, so a structure with missing/extra residues gives a different "
-                        "residue axis and no residue-wise pairing is possible for that protein")
+                   help="leave out proteins whose label vectors differ between the sides (e.g. structure vs. UniProt "
+                        "sequence in the structural ablation) instead of aborting")
     p.add_argument("--out-json", default=None)
     args = p.parse_args()
 

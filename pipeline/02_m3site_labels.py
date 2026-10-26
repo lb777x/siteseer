@@ -1,9 +1,5 @@
-"""Step 02: M3Site residue labels for Goliath training proteins that step 01 did not upgrade.
-
-M3Site (Gift-OYS/M3Site, data/label.json, commit 42b730a) maps a UniProt accession to one class per residue
-(0 = no site, 1-6 = active-site subtypes). A Goliath training row with label_source 'goliath_original' whose protein
-is in M3Site and whose sequence length equals the length of M3Site's array (proxy for the same sequence version)
-gets one singleton group per labelled residue, label_source 'm3site'. M-CSA-derived rows are never overwritten.
+"""Step 02: M3Site residue labels (classes 1-6) for Goliath training proteins without M-CSA labels, if the
+sequence length matches M3Site's label array.
 
   python pipeline/02_m3site_labels.py
 """

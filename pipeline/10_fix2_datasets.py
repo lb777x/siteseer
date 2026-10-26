@@ -1,12 +1,7 @@
-"""Step 10 (fix2): remove the M-CSA labels transferred to homologs (step 01, pass 2) from stages 1 and 1.5.
+"""Step 10: flag proteins with M-CSA labels transferred by homology (step 01) in train and valid, so no relative
+of an M-CSA cross-validation test protein carries its labels upstream.
 
-Step 01 copied M-CSA's catalytic residues onto 60-90% identical Goliath proteins (label_source
-mcsa_blast_homology). In the M-CSA 5-fold cross-validation the donors rotate into the test folds, so a fold-test
-protein could have a relative upstream carrying its own labels (257 of 962). Every protein that carries such a label
-in either fix1 file is flagged 'excluded_mcsa_label_transfer' in train and valid (all its rows). Rows are re-flagged,
-never dropped, so the embedding-cache keys stay valid; the stage-1/1.5 test split is unchanged.
-
-  python pipeline/10_fix2_datasets.py      # -> cached_dataframe_{fully_excl,real_labels_only}_fix2.csv
+  python pipeline/10_fix2_datasets.py
 """
 import argparse
 import json

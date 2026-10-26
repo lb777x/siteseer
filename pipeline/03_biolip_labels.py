@@ -1,16 +1,8 @@
-"""Step 03: BioLiP2 catalytic-site labels for Goliath training proteins not upgraded by steps 01-02.
+"""Step 03: BioLiP2 catalytic residues for Goliath training proteins without M-CSA or M3Site labels.
 
-BioLiP (Yang, Roy & Zhang; BioLiP2, NAR 2024), non-redundant table BioLiP_nr.txt (zhanggroup.org/BioLiP; the table
-changes weekly, the frozen copy used here is in the data release). Column 11 holds the catalytic residues, numbered
-into the receptor sequence of that PDB chain (column 21), which is often a fragment with gaps. Per UniProt id the row
-with the longest receptor sequence is used.
-
-  pass 1  receptor sequence identical to the Goliath sequence: copy the groups (label_source biolip_exact)
-  pass 2  blastp (5 best targets, e-value <= 1e-5) of the receptor sequences against the Goliath BLAST database;
-          hits of >= 60% identity map the residues through the alignment (biolip_blast_homology)
-
-Rows already upgraded by M-CSA or M3Site are never overwritten. Writes the training CSV and the list of every
-protein whose labels now come from M-CSA, M3Site or BioLiP.
+Per UniProt id the BioLiP row with the longest receptor sequence is used. Identical sequence: residues copied;
+otherwise blastp against the Goliath database (5 targets, e-value 1e-5) and mapping through alignments with >= 60%
+identity.
 
   python pipeline/03_biolip_labels.py
 """

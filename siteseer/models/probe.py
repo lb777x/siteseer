@@ -1,12 +1,5 @@
-"""The Flat probe: a per-residue MLP on frozen language-model embeddings.
-
-  embedding [R, d] -> Linear(d, hidden) -> ReLU -> Dropout -> Linear(hidden, 1) -> logit per residue
-
-With n_site_types > 0 a second linear layer on the same hidden representation predicts the site types
-(catalytic, binding) as independent sigmoids. The main "any site" output is unchanged by it.
-
-The head is one nn.Sequential named `head` (state_dict keys head.0.* / head.3.*), so every trained checkpoint loads
-as is; the `mode` argument is kept for checkpoint configs and only 'agnostic' exists.
+"""Flat probe: Linear(d, 128) - ReLU - Dropout - Linear(128, 1) per residue (164,097 parameters for d = 1280),
+with an optional linear output for the site types on the same hidden layer. Layer names match the trained checkpoints.
 """
 import torch
 import torch.nn as nn

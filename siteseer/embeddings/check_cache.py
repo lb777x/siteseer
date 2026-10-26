@@ -1,14 +1,8 @@
-"""Does an embedding cache cover every row a training CSV will read?
+"""Check that an embedding cache covers every row a training CSV reads (missing rows are skipped silently by
+CachedEmbeddingDataset). --quarantine-recent N renames unreadable files among the N newest to *.corrupt (-1: all).
 
-CachedEmbeddingDataset skips rows whose row_<key>.pt is missing and only prints the count, so a partial cache
-silently trains on fewer proteins; for a language-model comparison both sides must see the same proteins. This check
-runs before training and fails on any gap. --quarantine-recent N first loads the N most recently written files and
-renames unreadable ones to *.pt.corrupt (a job killed mid-write leaves one half-written file; the extraction scripts
-then recompute it); N = -1 checks every file. Keys: `_original_row_index` if the CSV has it, else the row position.
-
-  python -m siteseer.embeddings.check_cache --embedding-dir data/embeddings_goliath_esm2_l30 \
-      --csv dataset/label_diffusion/cached_dataframe_fully_excl_fix2.csv \
-            dataset/label_diffusion/cached_dataframe_real_labels_only_fix2.csv
+  python -m siteseer.embeddings.check_cache --embedding-dir data/embeddings_goliath_esm2_l30 \\
+      --csv dataset/label_diffusion/cached_dataframe_fully_excl_fix2.csv
 """
 import argparse
 import os

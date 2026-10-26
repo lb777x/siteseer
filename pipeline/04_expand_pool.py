@@ -1,10 +1,5 @@
-"""Step 04: add M3Site and BioLiP proteins that are not in the Goliath pool or in M-CSA as new rows.
-
-Starts from EasIFA's original cached_dataframe.csv (the clustering in step 05 only needs sequences; the upgraded
-labels of the existing rows come from step 03 and are joined in step 06). New M3Site proteins take their sequence
-from M3Site's split TSVs or from UniProt (data/external/m3site/m3site_sequences_fetched.json, fetch_m3site_sequences.py;
-UniProt changes over time, the frozen copy is in the data release). A protein new in both sources keeps its BioLiP
-row (labels tied to an experimental structure). New rows get an empty dataset_flag; step 05 assigns the split.
+"""Step 04: add M3Site and BioLiP proteins absent from the Goliath pool and from M-CSA as new rows (BioLiP preferred
+if in both), without a split flag.
 
   python pipeline/04_expand_pool.py
 """

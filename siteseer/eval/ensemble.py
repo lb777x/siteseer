@@ -1,13 +1,7 @@
-"""Average several models' predictions on the same proteins and score the result.
+"""Average the predicted probabilities of several models on the same proteins (e.g. seeds); report each member,
+the spread across members and the ensemble.
 
-Inputs are --save-predictions files from siteseer.eval.evaluate for models that were
-evaluated on the SAME split (e.g. one per seed). Proteins present in every file are
-kept; probabilities (not logits) are averaged per residue, since the members are
-separately trained and their logit scales need not agree. Reports each member's own
-metrics, the spread across members (mean, std, min, max), and the ensemble's metrics
-with bootstrap CIs -- so "the ensemble helps" can be read against the seed noise.
-
-  python -m siteseer.eval.ensemble --predictions a.pt b.pt c.pt [--threshold 0.5]
+  python -m siteseer.eval.ensemble --predictions seed42.pt seed43.pt seed44.pt [--out-json out.json]
 """
 import argparse
 import json
@@ -27,8 +21,7 @@ def main():
     p.add_argument("--n-bootstrap", type=int, default=1000)
     p.add_argument("--out-json", default=None)
     p.add_argument("--save-ensemble", default=None,
-                   help="write the averaged predictions in --save-predictions format, so the ensemble "
-                        "can be fed to siteseer.eval.paired_bootstrap like any other model")
+                   help="write the averaged predictions in the --save-predictions format")
     args = p.parse_args()
 
     members = []

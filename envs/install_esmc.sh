@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
-# ESMC-6B environment: envs/siteseer-esmc.yml plus EvolutionaryScale's `esm` SDK, which provides the ESMC model code
-# that biohub/ESMC-6B loads (trust_remote_code) and the tokenizer. esm 3.4.1 declares torch>=2.11 and a long list of
-# optional tools (IPython, boto3, structure viewers); the reported runs used torch 2.5.1, so `esm` is installed without
-# its declared dependencies and only the ones the ESMC path imports are added, at the versions used.
+# ESMC-6B environment: envs/siteseer-esmc.yml plus EvolutionaryScale's `esm` SDK (model code and tokenizer for
+# biohub/ESMC-6B). esm 3.4.1 declares torch>=2.11; the reported runs used torch 2.5.1, so it is installed without
+# its declared dependencies and only the ones the ESMC path imports are added.
 #   bash envs/install_esmc.sh
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"

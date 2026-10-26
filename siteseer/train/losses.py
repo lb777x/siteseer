@@ -1,8 +1,5 @@
-"""Losses for the per-residue probe.
-
-Focal loss (Lin et al. 2017) with the per-class weight alpha_t = alpha * y + (1 - alpha) * (1 - y): with alpha = 0.8
-positive residues (1-2% of all residues) weigh four times as much as negatives, and the (1 - p_t)^gamma term
-down-weights easy examples of both classes.
+"""Probe losses. Focal loss (Lin et al. 2017) with alpha_t = alpha for positives and 1 - alpha for negatives
+(alpha = 0.8, gamma = 2 in all configs).
 """
 import torch
 import torch.nn as nn

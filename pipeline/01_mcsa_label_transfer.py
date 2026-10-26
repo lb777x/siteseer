@@ -1,15 +1,8 @@
-"""Step 01: replace the Goliath pool's weak labels with M-CSA's curated catalytic residues where a Goliath training
-protein is an M-CSA training protein or a close homolog of one.
+"""Step 01: M-CSA catalytic residues for Goliath training proteins.
 
-  pass 1  same UniProt id and identical sequence: copy the M-CSA labels
-  pass 2  BLAST (blastp, 5 best targets, e-value <= 1e-5) of every M-CSA training protein against EasIFA's Goliath
-          BLAST database; for a Goliath training protein with a hit of >= 60% identity, the best hit's catalytic
-          residues are mapped through the alignment (residues in gaps or outside the aligned region are dropped)
-
-Only rows with dataset_flag == 'train' (EasIFA's split) are touched, so nothing is transferred into an evaluation
-split. Every upgraded protein id goes to data/pipeline/mcsa_derived_goliath_ids.txt.
-Note: fix2 (step 11) later removes the homology-transferred rows (label_source mcsa_blast_homology) again, because
-their donors rotate into the M-CSA K-fold test folds.
+Same UniProt id and identical sequence: labels copied. Otherwise blastp of the M-CSA training proteins against the
+Goliath BLAST database (5 targets, e-value 1e-5); hits with >= 60% identity get the residues mapped through the
+alignment. Only EasIFA's training split is changed.
 
   python pipeline/01_mcsa_label_transfer.py
 """

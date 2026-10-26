@@ -177,6 +177,8 @@ def main():
     ap.add_argument("--init-probe-checkpoint", default=None, help="warm start from a probe checkpoint")
     ap.add_argument("--resume-from", default=None, help="a latest.pt; restarts the epoch it was saved in")
     ap.add_argument("--checkpoint-every-n-steps", type=int, default=None)
+    ap.add_argument("--early-stop-patience", type=int, default=None,
+                    help="stop after this many validations without a new best AUPRC")
     ap.add_argument("--device", default=None)
     args = ap.parse_args()
 
@@ -246,6 +248,7 @@ def main():
         save("latest.pt", optimizer_state_dict=optimizer.state_dict(), scheduler_state_dict=scheduler.state_dict(),
              epoch=epoch, global_step=step, best_val_auprc=best_val_auprc)
 
+    evals_since_best = 0
     for epoch in range(start_epoch, epochs):
         tm, tl, _, _, global_step = run_epoch(
             train_loader, probe, device, loss_fn, optimizer=optimizer, to_input=to_input, type_loss_fn=type_loss_fn,
@@ -273,6 +276,12 @@ def main():
             best_val_auprc = vm["auprc"]
             save("best.pt", epoch=epoch, val_auprc=best_val_auprc, val_f1=vm["f1"])
             print(f"  [checkpoint] new best (AUPRC={best_val_auprc:.3f}) -> {ckpt_dir}/best.pt")
+            evals_since_best = 0
+        else:
+            evals_since_best += 1
+            if args.early_stop_patience and evals_since_best >= args.early_stop_patience:
+                print(f"  [early stop] {evals_since_best} validations without improvement, stopping at epoch {epoch}")
+                break
 
     save("final.pt", epoch=epochs - 1)
     print(f"[+] done. best valid AUPRC={best_val_auprc:.3f}; checkpoints in {ckpt_dir}")

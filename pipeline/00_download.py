@@ -1,11 +1,12 @@
 """Step 00: download the raw sources and verify their SHA-256 checksums.
 
 EasIFA's dataset.zip (Goliath pool, BLAST database, Swiss-Prot test set, M-CSA splits; MIT licence), EasIFA's
-per-residue test predictions (EasIFA_results.zip, Zenodo 12819674, CC BY 4.0) and the M3Site tables (commit 42b730a)
-come from their original sources. BioLiP_nr.txt and the UniProt sequences of M3Site proteins
-change over time and come as frozen copies from the SiteSeer data release.
+per-residue test predictions (EasIFA_results.zip, Zenodo 12819674, CC BY 4.0), CataloDB from Squidly's dataset bundle
+(datasets.zip, Zenodo 15541320, CC BY 4.0, 4.8 GB; four files are kept) and the M3Site tables (commit 42b730a) come
+from their original sources. BioLiP_nr.txt and the UniProt sequences of M3Site proteins change over time and come as
+frozen copies from the SiteSeer data release.
 
-  python pipeline/00_download.py [--only easifa easifa_results m3site release]
+  python pipeline/00_download.py [--only easifa easifa_results catalodb m3site release]
 """
 import argparse
 import hashlib
@@ -19,6 +20,10 @@ EASIFA_URL = ("https://drive.usercontent.google.com/download?id=15c-KoZ47TpF9_qy
 EASIFA_SHA256 = "40a38c68567a99cbabf02d6f58e683cc8fefd0379741f950506a015bf142f6d4"
 EASIFA_RESULTS_URL = "https://zenodo.org/records/12819674/files/EasIFA_results.zip?download=1"
 EASIFA_RESULTS_SHA256 = "96ab46a638e5a9d1d699633d946141512aba11ea8dd07c41e6098832053d7d39"
+SQUIDLY_DATASETS_URL = "https://zenodo.org/records/15541320/files/datasets.zip?download=1"
+SQUIDLY_DATASETS_SHA256 = "9499405fb05b86b918c558f374e621ecb7a2181b5f0c8398a3a0fa2ffee89c6c"
+CATALODB_FILES = ["All_metadata.tsv", "final_test_set_post_structural_filtering.txt", "fastas/train_and_test.fasta",
+                  "fastas/test.fasta"]
 M3SITE_COMMIT = "42b730abb0ed649b7ebae80fcb4771e68b82c9db"
 M3SITE_FILES = {
     "data/label.json": ("label.json", "ed0e2cce0ad80f2ce380c99e9da022b04b484b8216d727ecf5ec61d9328a046a"),
@@ -60,7 +65,7 @@ def fetch(url: str, path: str, expected: str):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    sources = ["easifa", "easifa_results", "m3site", "release"]
+    sources = ["easifa", "easifa_results", "catalodb", "m3site", "release"]
     ap.add_argument("--only", nargs="*", choices=sources, default=sources)
     args = ap.parse_args()
 
@@ -76,6 +81,16 @@ def main():
         with zipfile.ZipFile(zip_path) as z:
             z.extractall("data/external/easifa_results")
         print("[+] EasIFA results extracted to data/external/easifa_results/results/")
+    if "catalodb" in args.only:
+        zip_path = "data/external/squidly_datasets.zip"
+        fetch(SQUIDLY_DATASETS_URL, zip_path, SQUIDLY_DATASETS_SHA256)
+        with zipfile.ZipFile(zip_path) as z:
+            for name in CATALODB_FILES:
+                out = f"data/external/catalodb/{name}"
+                os.makedirs(os.path.dirname(out), exist_ok=True)
+                with z.open(f"datasets/CataloDB/{name}") as src, open(out, "wb") as dst:
+                    shutil.copyfileobj(src, dst)
+        print("[+] CataloDB files extracted to data/external/catalodb/ (the 4.8 GB zip can be deleted)")
     if "m3site" in args.only:
         for remote, (name, digest) in M3SITE_FILES.items():
             fetch(f"https://raw.githubusercontent.com/Gift-OYS/M3Site/{M3SITE_COMMIT}/{remote}",

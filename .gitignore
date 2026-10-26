@@ -17,6 +17,7 @@ venv/
 
 # cluster logs
 slurm-*.out
+siteseer-*.out
 slurm-*.err
 
 # OS / editor

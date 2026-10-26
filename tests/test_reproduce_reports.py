@@ -55,3 +55,28 @@ def test_seed_summary(data_root, tmp_path):
     assert round(kf["macro_auprc"]["mean"], 3) == 0.776 and round(kf["macro_auprc"]["sd"], 3) == 0.001
     assert round(kf["macro_f1"]["mean"], 3) == 0.670
     assert round(e82["macro_f1"]["mean"], 3) == 0.721 and round(e82["macro_auprc"]["mean"], 3) == 0.813
+
+
+@pytest.mark.parametrize("variant", ["esm_bin", "saprot_bin"])
+def test_easifa82(data_root, tmp_path, variant):
+    ref = json.load(open(need(data_root, f"results/reports/easifa82_{variant}_vs_main.json")))
+    a = [need(data_root, f"data/comparisons/easifa/easifa82_{variant}_preds.pt")]
+    b = [need(data_root, "results/predictions/main_stage2_easifa82_test.pt")]
+    got = run_paired(a, b, ref["label_a"], ref["label_b"], ref["n_bootstrap"], str(tmp_path / "out.json"), data_root)
+    assert got["n_shared_proteins"] == ref["n_shared_proteins"] == 82
+    for key, r in ref["metrics"].items():
+        assert got["metrics"][key]["ci95"] == pytest.approx(r["ci95"], abs=1e-12), key
+
+
+def test_easifa_ablation(data_root, tmp_path):
+    results = need(data_root, "data/external/easifa_results/results")
+    out = tmp_path / "ablation.json"
+    env = dict(os.environ, PYTHONPATH=os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    subprocess.run([sys.executable, "-m", "siteseer.comparisons.easifa_ablation", "--results-dir", results,
+                    "--out-json", str(out)], check=True, env=env, capture_output=True)
+    r = json.load(open(out))
+    # reported values (figure 3.9): gain in macro F1 with 95% CI
+    assert round(r["structure"]["0~40%"]["gain"], 4) == 0.0160
+    assert [round(x, 4) for x in r["structure"]["0~40%"]["ci95"]] == [-0.0005, 0.0326]
+    assert [round(x, 4) for x in r["reaction"]["0~40%"]["ci95"]] == [0.0068, 0.0386]
+    assert [round(x, 4) for x in r["reaction"]["all"]["ci95"]] == [0.0277, 0.0480]

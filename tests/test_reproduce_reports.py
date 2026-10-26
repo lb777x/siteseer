@@ -8,6 +8,8 @@ import pytest
 
 from conftest import need
 
+slow = pytest.mark.skipif(os.environ.get("SITESEER_SLOW") != "1", reason="slow; set SITESEER_SLOW=1")
+
 
 def run_paired(a, b, label_a, label_b, n_bootstrap, out, cwd):
     cmd = [sys.executable, "-m", "siteseer.eval.paired_bootstrap", "--a", *a, "--b", *b, "--label-a", label_a,
@@ -80,3 +82,22 @@ def test_easifa_ablation(data_root, tmp_path):
     assert [round(x, 4) for x in r["structure"]["0~40%"]["ci95"]] == [-0.0005, 0.0326]
     assert [round(x, 4) for x in r["reaction"]["0~40%"]["ci95"]] == [0.0068, 0.0386]
     assert [round(x, 4) for x in r["reaction"]["all"]["ci95"]] == [0.0277, 0.0480]
+
+
+@slow
+def test_easifa_swissprot(data_root, tmp_path):
+    ours = [need(data_root, f"results/predictions/{n}_swissprot_test.pt") for n in ("easifa_own", "main_stage2_mcsa")]
+    env = dict(os.environ, PYTHONPATH=os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    subprocess.run([sys.executable, "-m", "siteseer.comparisons.easifa_swissprot", "--ours", *ours,
+                    "--subsets", "lt80_noleak", "--out-dir", str(tmp_path)],
+                   check=True, cwd=data_root, env=env, capture_output=True)
+    for theirs in ("esm_bin", "ng_bin"):
+        for name in ("easifa_own", "main_stage2_mcsa"):
+            ref = json.load(open(need(data_root, f"results/reports/easifa_swissprot/{theirs}_vs_{name}_lt80_noleak.json")))
+            got = json.load(open(tmp_path / f"{theirs}_vs_{name}_lt80_noleak.json"))
+            assert got["n_shared_proteins"] == ref["n_shared_proteins"] == 648
+            for key, r in ref["metrics"].items():
+                assert got["metrics"][key]["ci95"] == pytest.approx(r["ci95"], abs=1e-12), (theirs, name, key)
+    # reported: trained on EasIFA's data, macro AUPRC 0.816 vs 0.865 (ESM-bin) and 0.834 (NG-bin)
+    r = json.load(open(tmp_path / "esm_bin_vs_easifa_own_lt80_noleak.json"))["metrics"]["macro_auprc"]
+    assert (round(r["b"], 3), round(r["a"], 3)) == (0.816, 0.865)

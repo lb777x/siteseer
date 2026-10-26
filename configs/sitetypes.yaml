@@ -1,0 +1,5 @@
+# Site-type model: the main recipe with two extra outputs (catalytic, binding) under a masked loss.
+# Overlay on configs/main/*.yaml.
+probe:
+  n_site_types: 2
+  site_type_loss_weight: 0.5

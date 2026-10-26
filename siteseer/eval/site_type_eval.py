@@ -4,8 +4,9 @@ Per type: pooled AUPRC/AUROC and macro AUPRC over the residues the type supervis
 catalytic-only vs binding-only residues in proteins that supervise both, from the type outputs (catalytic minus
 binding), the catalytic output, the main output and the main output of --baseline-checkpoint, with protein-level CIs.
 
-  python -m siteseer.eval.site_type_eval --config configs/sitetypes/stage1.yaml --encoder esm_raw \\
-      --probe-checkpoint checkpoints/<run>/best.pt --split test [--baseline-checkpoint checkpoints/<flat run>/best.pt]
+  python -m siteseer.eval.site_type_eval --config configs/main/stage1.yaml configs/sitetypes.yaml \\
+      --probe-checkpoint checkpoints/sitetypes_stage1/best.pt --split test [--baseline-checkpoint checkpoints/main_stage1/best.pt]
+  python -m siteseer.eval.site_type_eval --from-predictions saved.pt --out-json out.json
 """
 import argparse
 import json
@@ -34,6 +35,21 @@ def auc_pair(y, s):
     return float(average_precision_score(y, s)), float(roc_auc_score(y, s))
 
 
+def make_row(pid, any_logit, types, y, t, m, b=None):
+    """Per-protein arrays; for proteins that supervise both types also the catalytic-only / binding-only residues."""
+    r = {"id": pid, "any": any_logit.numpy(), "y": y.numpy(), "types": types.numpy(), "t": t.numpy(), "m": m.numpy(),
+         "dy": np.array([])}
+    if bool(m[:, 0].any() and m[:, 1].any()):
+        sel = (m[:, 0] > 0) & (m[:, 1] > 0) & (t[:, 0] != t[:, 1])
+        r["dy"] = t[sel, 0].numpy()
+        r["cat-bind"] = (types[sel, 0] - types[sel, 1]).numpy()
+        r["cat"] = types[sel, 0].numpy()
+        r["any_d"] = any_logit[sel].numpy()
+        if b is not None:
+            r["base_d"] = b[sel].numpy()
+    return r
+
+
 def distinction(rows, key, n_boot, rng):
     """AUROC catalytic-only (1) vs binding-only (0) residues, pooled; bootstrap over proteins."""
     def score(idx):
@@ -51,8 +67,9 @@ def distinction(rows, key, n_boot, rng):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--config", nargs="+", required=True, help="the run's YAML (data section; probe.n_site_types>0)")
-    ap.add_argument("--probe-checkpoint", required=True)
+    ap.add_argument("--config", nargs="+", default=None, help="the run's YAML (data section; probe.n_site_types>0)")
+    ap.add_argument("--probe-checkpoint", default=None)
+    ap.add_argument("--from-predictions", default=None, help="a --save-predictions file instead of running the model")
     ap.add_argument("--baseline-checkpoint", default=None)
     ap.add_argument("--split", default="test", choices=["train", "valid", "test"])
     ap.add_argument("--n-bootstrap", type=int, default=1000)
@@ -64,6 +81,14 @@ def main():
     ap.add_argument("--set", nargs="*", default=[], metavar="KEY=VALUE")
     args = ap.parse_args()
 
+    if args.from_predictions:
+        d = torch.load(args.from_predictions, weights_only=False)
+        rows = [make_row(*(d[k][i] for k in ("protein_ids", "logits", "type_logits", "labels", "type_targets",
+                                             "type_mask", "baseline_logits"))) for i in range(len(d["protein_ids"]))]
+        report(rows, args, base_present=d["baseline_logits"][0] is not None)
+        return
+    if not (args.config and args.probe_checkpoint):
+        raise SystemExit("--config and --probe-checkpoint are required unless --from-predictions is given")
     cfg = load_config(args.config, args.set)
     resolve_encoder(args, cfg)
     if cfg["probe"].get("n_site_types", 0) != len(TYPE_NAMES):
@@ -89,23 +114,19 @@ def main():
             any_logit, types = any_logit.float().cpu(), types.float().cpu()
             b = base(emb).float().cpu() if base is not None else None
             t, m, y = item["type_targets"], item["type_mask"], item["labels"]
-            both = bool(m[:, 0].any() and m[:, 1].any())
-            r = {"id": item["protein_id"], "any": any_logit.numpy(), "y": y.numpy(),
-                 "types": types.numpy(), "t": t.numpy(), "m": m.numpy(), "dy": np.array([])}
-            if both:
-                sel = (m[:, 0] > 0) & (m[:, 1] > 0) & (t[:, 0] != t[:, 1])   # catalytic-only or binding-only
-                r["dy"] = t[sel, 0].numpy()
-                r["cat-bind"] = (types[sel, 0] - types[sel, 1]).numpy()
-                r["cat"] = types[sel, 0].numpy()
-                r["any_d"] = any_logit[sel].numpy()
-                if b is not None:
-                    r["base_d"] = b[sel].numpy()
-            rows.append(r)
+            rows.append(make_row(item["protein_id"], any_logit, types, y, t, m, b))
             if args.save_predictions:
                 for k, v in (("protein_ids", item["protein_id"]), ("logits", any_logit), ("type_logits", types),
                              ("labels", y), ("type_targets", t), ("type_mask", m), ("baseline_logits", b)):
                     saved[k].append(v)
 
+    if args.save_predictions:
+        torch.save(saved, args.save_predictions)
+        print(f"[*] saved {len(saved['protein_ids'])} proteins' predictions to {args.save_predictions}")
+    report(rows, args, base_present=base is not None)
+
+
+def report(rows, args, base_present):
     out = {"split": args.split, "config": args.config, "checkpoint": args.probe_checkpoint,
            "baseline": args.baseline_checkpoint, "n_proteins": len(rows)}
     ys, ss = np.concatenate([r["y"] for r in rows]), np.concatenate([r["any"] for r in rows])
@@ -138,7 +159,7 @@ def main():
         out["distinction"] = {"n_proteins": len(both), "n_catalytic": n_cat, "n_binding": n_all - n_cat}
         keys = [("cat-bind", "type outputs, cat - bind"), ("cat", "catalytic output"),
                 ("any_d", "main output (reference)")]
-        if base is not None:
+        if base_present:
             keys.append(("base_d", "baseline main output"))
         for key, label in keys:
             res = distinction(both, key, args.n_bootstrap, rng)
@@ -147,9 +168,6 @@ def main():
     else:
         print("  distinction: no protein supervises both types in this split (e.g. M-CSA)")
 
-    if args.save_predictions:
-        torch.save(saved, args.save_predictions)
-        print(f"[*] saved {len(saved['protein_ids'])} proteins' predictions to {args.save_predictions}")
     if args.out_json:
         json.dump(out, open(args.out_json, "w"), indent=1)
         print(f"[+] wrote {args.out_json}")

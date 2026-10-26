@@ -39,5 +39,9 @@ python "$P/13_easifa_swissprot.py"
 python "$P/14_easifa_own_split.py"
 python "$P/15_catalodb_split.py"
 python "$P/16_squidly_mcsa.py"
+# negative control: non-enzyme sets A/B/C and G, pocket candidates for the P2Rank comparison
+python "$P/17_negative_sets.py"
+python "$P/18_gold_set.py"
+python "$P/19_pocket_candidates.py"
 
 sha256sum -c "$P/expected_sha256.txt"

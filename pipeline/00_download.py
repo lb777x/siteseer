@@ -4,8 +4,8 @@ EasIFA's dataset.zip (Goliath pool, BLAST database, Swiss-Prot test set, M-CSA s
 per-residue test predictions (EasIFA_results.zip, Zenodo 12819674, CC BY 4.0), CataloDB from Squidly's dataset bundle
 (datasets.zip, Zenodo 15541320, CC BY 4.0, 4.8 GB; four files are kept), the protein list Squidly's released models
 were trained on (WRiegs/Squidly, MIT, commit 00f1456) and the M3Site tables (commit 42b730a) come from their original
-sources. BioLiP_nr.txt and the UniProt sequences of M3Site proteins change over time and come as frozen copies from
-the SiteSeer data release.
+sources. BioLiP_nr.txt, the UniProt sequences of M3Site proteins and the UniProt queries behind the negative-control
+sets change over time and come as frozen copies from the SiteSeer data release.
 
   python pipeline/00_download.py [--only easifa easifa_results catalodb squidly_train m3site release]
 """
@@ -39,6 +39,11 @@ M3SITE_FILES = {
 DATA_RELEASE_URL = None
 RELEASE_FILES = {
     "data/external/biolip/BioLiP_nr.txt": "4688b8c3c3acf68a6e3816780cc0ddbba8d2ba6aaa40a41daba741b099d33099",
+    # UniProt queries of 2026-10-05 behind the negative-control sets (steps 17-19)
+    "data/external/uniprot/uniprot_A.tsv.gz": "1398cf606c33678c76b70610aa2f551a249b85afec5e292c7f6d86e7b0e05509",
+    "data/external/uniprot/uniprot_B.tsv.gz": "baeebcea01c3bc859593f36e1074b7544b07c4ab1fc4968f81edb3bc7e236689",
+    "data/external/uniprot/uniprot_gold.tsv.gz": "77040a34da19b3779ade6a967c120ea8cd6a06c7d525ab0d8195c99b1c9193e5",
+    "data/external/uniprot/swissprot_pfam_ec.tsv.gz": "09da1242152d29dfa1c9e63243e982a5719817777ad2092163254756a86c04dd",
     "data/external/m3site/m3site_sequences_fetched.json":
         "981ce26b0547764becb0a5a6aecce166b12724b45e09de32268c99250aa4cb33",
 }

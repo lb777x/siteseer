@@ -11,9 +11,9 @@ from conftest import need
 slow = pytest.mark.skipif(os.environ.get("SITESEER_SLOW") != "1", reason="slow; set SITESEER_SLOW=1")
 
 
-def run_paired(a, b, label_a, label_b, n_bootstrap, out, cwd):
+def run_paired(a, b, label_a, label_b, n_bootstrap, out, cwd, extra=()):
     cmd = [sys.executable, "-m", "siteseer.eval.paired_bootstrap", "--a", *a, "--b", *b, "--label-a", label_a,
-           "--label-b", label_b, "--n-bootstrap", str(n_bootstrap), "--out-json", out]
+           "--label-b", label_b, "--n-bootstrap", str(n_bootstrap), "--out-json", out, *extra]
     env = dict(os.environ, PYTHONPATH=os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     subprocess.run(cmd, check=True, cwd=cwd, env=env, capture_output=True)
     return json.load(open(out))
@@ -101,3 +101,24 @@ def test_easifa_swissprot(data_root, tmp_path):
     # reported: trained on EasIFA's data, macro AUPRC 0.816 vs 0.865 (ESM-bin) and 0.834 (NG-bin)
     r = json.load(open(tmp_path / "esm_bin_vs_easifa_own_lt80_noleak.json"))["metrics"]["macro_auprc"]
     assert (round(r["b"], 3), round(r["a"], 3)) == (0.816, 0.865)
+
+
+def test_squidly_catalodb(data_root, tmp_path):
+    ref = json.load(open(need(data_root, "results/reports/squidly_catalodb_vs_ours.json")))
+    got = run_paired([need(data_root, "data/comparisons/squidly/catalodb_preds.pt")],
+                     [need(data_root, "results/predictions/catalodb_test.pt")], ref["label_a"], ref["label_b"],
+                     ref["n_bootstrap"], str(tmp_path / "out.json"), data_root, extra=["--threshold-a", "0.6"])
+    assert got["n_shared_proteins"] == ref["n_shared_proteins"] == 231
+    for key, r in ref["metrics"].items():
+        assert got["metrics"][key]["ci95"] == pytest.approx(r["ci95"], abs=1e-12), key
+
+
+def test_squidly_mcsa_lt30(data_root, tmp_path):
+    ref = json.load(open(need(data_root, "results/reports/squidly_mcsa_lt30.json")))
+    a = [need(data_root, f"results/predictions/main_kfold{i}_test.pt") for i in range(5)]
+    got = run_paired(a, [need(data_root, "data/comparisons/squidly/mcsa_preds.pt")], ref["label_a"], ref["label_b"],
+                     ref["n_bootstrap"], str(tmp_path / "out.json"), data_root,
+                     extra=["--threshold-b", "0.6", "--restrict-ids", need(data_root, "dataset/squidly/mcsa_ids_lt30.txt")])
+    assert got["n_shared_proteins"] == ref["n_shared_proteins"] == 427
+    for key, r in ref["metrics"].items():
+        assert got["metrics"][key]["ci95"] == pytest.approx(r["ci95"], abs=1e-12), key

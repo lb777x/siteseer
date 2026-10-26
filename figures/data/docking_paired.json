@@ -1,0 +1,36 @@
+{
+  "n_total": 757,
+  "n_paired": 637,
+  "conditions": {
+    "_predicted_cropped": {
+      "delta_conf": 0.03458398744113029,
+      "delta_conf_ci": [
+        -0.024333987441130304,
+        0.09412284144427002
+      ],
+      "frac_better": 0.5180533751962323,
+      "time_saving_pct": 19.309706070732563,
+      "time_saving_ci": [
+        18.58204454898954,
+        20.126191311871235
+      ],
+      "mean_seconds_base": 91.66489795918366,
+      "mean_seconds": 72.43089481946625
+    },
+    "_predicted_cropped_weighted": {
+      "delta_conf": 0.06538461538461537,
+      "delta_conf_ci": [
+        0.00952276295133438,
+        0.11973665620094191
+      ],
+      "frac_better": 0.5604395604395604,
+      "time_saving_pct": 19.185644520343246,
+      "time_saving_ci": [
+        18.43629403398171,
+        19.97454476974913
+      ],
+      "mean_seconds_base": 91.66489795918366,
+      "mean_seconds": 72.55166405023547
+    }
+  }
+}

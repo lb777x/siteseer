@@ -1,0 +1,51 @@
+{
+  "n_paired": 637,
+  "contact_A": 4.0,
+  "rows": [
+    {
+      "condition": "_global_hit",
+      "label": "DiffDock alone (rank 1)",
+      "kind": "base",
+      "rate": 65.3061224489796
+    },
+    {
+      "condition": "_predicted_cropped_hit",
+      "label": "Cropped",
+      "kind": "compass",
+      "rate": 68.75981161695447,
+      "delta_pp": 3.453689167974882,
+      "ci_pp": [
+        -0.6279434850863422,
+        7.853218210361046
+      ]
+    },
+    {
+      "condition": "_predicted_cropped_weighted_hit",
+      "label": "Weighted cropped",
+      "kind": "compass",
+      "rate": 72.05651491365776,
+      "delta_pp": 6.750392464678178,
+      "ci_pp": [
+        2.6687598116169546,
+        11.145996860282574
+      ]
+    },
+    {
+      "condition": "_global_rerank_hit",
+      "label": "COMPASS re-ranking",
+      "kind": "compass",
+      "rate": 76.92307692307693,
+      "delta_pp": 11.616954474097332,
+      "ci_pp": [
+        8.16326530612245,
+        14.91365777080063
+      ]
+    },
+    {
+      "condition": "_global_oracle_hit",
+      "label": "Upper bound: best of 10 poses",
+      "kind": "ref",
+      "rate": 83.35949764521193
+    }
+  ]
+}

@@ -22,3 +22,6 @@ slurm-*.err
 # OS / editor
 .DS_Store
 .vscode/
+
+# rendered figures (regenerate with figures/plot_*.py)
+/figures/output/

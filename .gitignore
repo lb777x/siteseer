@@ -1,0 +1,23 @@
+# data, embeddings, structures, checkpoints and run outputs live outside git (Zenodo / rebuilt by pipeline/)
+/data/
+/checkpoints/
+/results/
+/env_exports/
+*.pt
+*.pth
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+venv/
+.venv/
+
+# cluster logs
+slurm-*.out
+slurm-*.err
+
+# OS / editor
+.DS_Store
+.vscode/

@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "compass"
+version = "0.1.0"
+description = "Enzyme active-site prediction from frozen protein language model embeddings with a small MLP head"
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.10"
+# Pinned runtime dependencies live in envs/ (one conda environment per tool stack); see README.
+
+[tool.setuptools.packages.find]
+include = ["compass*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

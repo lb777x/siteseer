@@ -78,7 +78,7 @@ def main():
     ap.add_argument("--out-json", default=None)
     ap.add_argument("--device", default=None)
     ap.add_argument("--encoder", "--baseline-encoder", dest="encoder", default=None, choices=ENCODERS)
-    ap.add_argument("--set", nargs="*", default=[], metavar="KEY=VALUE")
+    ap.add_argument("--set", nargs="*", action="extend", default=[], metavar="KEY=VALUE")
     args = ap.parse_args()
 
     if args.from_predictions:

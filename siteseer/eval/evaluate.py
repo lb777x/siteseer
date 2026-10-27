@@ -22,7 +22,7 @@ from siteseer.train.train_probe import ENCODERS, embed_dim_for, load_config, res
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--config", nargs="+", required=True)
-    ap.add_argument("--set", nargs="*", default=[], metavar="KEY=VALUE")
+    ap.add_argument("--set", nargs="*", action="extend", default=[], metavar="KEY=VALUE")
     ap.add_argument("--encoder", "--baseline-encoder", dest="encoder", default=None, choices=ENCODERS)
     ap.add_argument("--probe-checkpoint", required=True)
     ap.add_argument("--probe-architecture", default="flat", choices=["flat", "graph_v2"])

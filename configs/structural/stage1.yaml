@@ -1,0 +1,28 @@
+# Structural probe (ESMC-6B + frozen pretrained GVP encoder), stage 1: Goliath pool, fix1 data.
+run_name: structural_stage1
+seed: 42
+data:
+  dataset_class: goliath
+  train_csv: dataset/label_diffusion/cached_dataframe_fully_excl_fix1.csv
+  id_column: alphafolddb-id
+  embedding_dir: data/embeddings_goliath_esmc
+  structure_root: data/structures
+structural_probe:
+  k_neighbors: 24
+  fusion_hidden_dim: 256
+probe:
+  hidden_dim: 128
+  dropout: 0.3
+  loss: focal
+  focal_alpha: 0.8
+  focal_gamma: 2.0
+optim:
+  lr: 0.001
+  weight_decay: 0.0001
+  epochs: 20
+  batch_size: 8
+logging:
+  log_every_n_steps: 200
+  eval_every_n_epochs: 1
+  checkpoint_dir: checkpoints
+encoder: esmc_raw

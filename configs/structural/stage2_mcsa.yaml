@@ -1,0 +1,28 @@
+# Structural probe, M-CSA stage (ESMC computed live on the structure's sequence).
+run_name: structural_stage2_mcsa
+seed: 42
+data:
+  train_csv: dataset/mcsa_fine_tune/normal_mcsa/train_dataset/mcsa_train.csv
+  valid_csv: dataset/mcsa_fine_tune/normal_mcsa/valid_dataset/mcsa_valid.csv
+  test_csv: dataset/mcsa_fine_tune/normal_mcsa/test_dataset/mcsa_test.csv
+  id_column: alphafolddb-id
+  structure_root: data/structures
+structural_probe:
+  k_neighbors: 24
+  fusion_hidden_dim: 256
+probe:
+  hidden_dim: 128
+  dropout: 0.4
+  loss: focal
+  focal_alpha: 0.8
+  focal_gamma: 2.0
+optim:
+  lr: 0.0003
+  weight_decay: 0.0001
+  epochs: 20
+  batch_size: 8
+logging:
+  log_every_n_steps: 20
+  eval_every_n_epochs: 2
+  checkpoint_dir: checkpoints
+encoder: esmc_raw

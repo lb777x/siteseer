@@ -174,3 +174,24 @@ def assert_close(got, ref, where, rel=1e-9):
         assert got == pytest.approx(ref, rel=rel, abs=1e-12), where
     else:
         assert got == ref, where
+
+
+@slow
+@pytest.mark.parametrize("stage,row", [("stage1", 0), ("stage15", 1), ("kfold", 2)])
+def test_structural_delta(data_root, tmp_path, stage, row):
+    files = lambda n: [need(data_root, f"results/predictions/{n}_kfold{i}_test.pt") for i in range(5)] \
+        if stage == "kfold" else [need(data_root, f"results/predictions/{n}_{stage}_test.pt")]
+    fig = json.load(open(need(data_root, "results/reports/structural_delta_figure.json")))["rows"][row]
+    # controlled: Structural minus Flat, both on ESMC-6B and fix1 data (figure 3.15, filled markers)
+    got = run_paired(files("esmc_fix1"), files("structural"), "flat", "structural", 1000, str(tmp_path / "c.json"),
+                     data_root, extra=["--drop-label-mismatch"])
+    m = got["metrics"]["pooled_auprc"]
+    assert got["n_shared_proteins"] == fig["n"]
+    assert (round(m["a"], 3), round(m["b"], 3), round(m["delta"], 3)) == (fig["flat"], fig["structural"], fig["delta"])
+    assert [round(x, 3) for x in m["ci95"]] == fig["ci"]
+    # against the main model (hollow markers): the saved report exactly
+    ref = json.load(open(need(data_root, f"results/reports/structural_vs_main_{stage}.json")))
+    got = run_paired(files("main"), files("structural"), ref["label_a"], ref["label_b"], ref["n_bootstrap"],
+                     str(tmp_path / "m.json"), data_root, extra=["--drop-label-mismatch"])
+    for key, r in ref["metrics"].items():
+        assert got["metrics"][key]["ci95"] == pytest.approx(r["ci95"], abs=1e-12), key

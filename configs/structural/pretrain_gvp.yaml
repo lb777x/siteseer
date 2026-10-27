@@ -1,0 +1,42 @@
+# Self-supervised pretraining of the GVP encoder (siteseer/structural/pretrain.py) on the stage-1 training structures.
+run_name: gvp_ssl
+seed: 42
+data:
+  train_csv: dataset/label_diffusion/cached_dataframe_fully_excl_fix1.csv
+  split_name: train
+  id_column: alphafolddb-id
+  structure_root: data/structures
+  qc:
+    min_ca_atoms: 10
+    min_avg_plddt: 30.0
+encoder:
+  hidden_scalar: 256
+  hidden_vector: 64
+  num_layers: 5
+  k_neighbors: 24
+  out_dim: 256
+predictor:
+  hidden_dim: 256
+  num_layers: 2
+  query_knn_k: 8
+masking:
+  target_fraction: 0.15
+  num_blocks: 1
+  knn_k_for_growth: 16
+objective:
+  sigreg:
+    K: 32
+    G: 32
+    t_max: 5.0
+    lambda: 25.0
+optim:
+  lr: 0.0003
+  weight_decay: 0.05
+  epochs: 20
+  batch_size: 16
+hardware:
+  precision: bf16
+logging:
+  log_every_n_steps: 200
+  collapse_diagnostics_every_n_steps: 500
+  checkpoint_every_n_steps: 2000

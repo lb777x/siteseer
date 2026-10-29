@@ -13,6 +13,7 @@
 # siteseer for the ESM-2 models, siteseer-esmc for esmc_6b. Finished steps are skipped, so a resubmitted job resumes.
 set -euo pipefail
 cd "${SLURM_SUBMIT_DIR:-.}"
+export LD_LIBRARY_PATH="${CONDA_PREFIX:+$CONDA_PREFIX/lib:}${LD_LIBRARY_PATH:-}"   # the env's libstdc++ before the system one
 MODEL=${MODEL:-main}
 case "$MODEL" in
     main)     OVERLAY=();                          CACHE=data/embeddings_goliath_esm2_l30 ;;

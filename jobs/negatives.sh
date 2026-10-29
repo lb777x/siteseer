@@ -12,6 +12,7 @@
 #                                    pipeline steps 17-19)
 set -euo pipefail
 cd "${SLURM_SUBMIT_DIR:-.}"
+export LD_LIBRARY_PATH="${CONDA_PREFIX:+$CONDA_PREFIX/lib:}${LD_LIBRARY_PATH:-}"   # the env's libstdc++ before the system one
 N=dataset/negatives
 OUT=results/negatives
 CK=checkpoints

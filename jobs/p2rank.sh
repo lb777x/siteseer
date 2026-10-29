@@ -11,6 +11,7 @@
 #                               the data release in data/comparisons/p2rank/out.
 set -euo pipefail
 cd "${SLURM_SUBMIT_DIR:-.}"
+export LD_LIBRARY_PATH="${CONDA_PREFIX:+$CONDA_PREFIX/lib:}${LD_LIBRARY_PATH:-}"   # the env's libstdc++ before the system one
 PRANK=${PRANK:-external/p2rank_2.5.1/prank}
 OUT=data/comparisons/p2rank
 mkdir -p "$OUT"

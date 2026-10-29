@@ -26,6 +26,7 @@ RUNS=$OUT/runs
 export DIFFDOCK_HOME=${DIFFDOCK_HOME:-$ROOT/external/DiffDock}
 source "$(conda info --base)/etc/profile.d/conda.sh"
 conda activate "${SITESEER_ENV:-siteseer}"
+export LD_LIBRARY_PATH="$CONDA_PREFIX/lib:${LD_LIBRARY_PATH:-}"   # the env's libstdc++ before the system one
 mkdir -p "$CROPS" "$RUNS"
 
 if [ "${1:-}" = post ]; then
@@ -45,6 +46,7 @@ python -u -m siteseer.docking.crops "${COMMON[@]}" --output-dir "$CROPS/predicte
 python -u -m siteseer.docking.crops "${COMMON[@]}" --output-dir "$CROPS/predicted_cropped_weighted" --weighted-centroid
 
 conda activate "${DIFFDOCK_ENV:-siteseer-diffdock}"
+export LD_LIBRARY_PATH="$CONDA_PREFIX/lib:${LD_LIBRARY_PATH:-}"
 TOTAL=$(python -c "import pandas as pd; print(len(pd.read_csv('$SET')))")
 D=(--csv "$SET" --out-dir "$RUNS" --tracker-csv "$OUT/tracker_shard$K.csv" --smiles-json "$LIG"
    --shard-index "$K" --num-shards "$N")

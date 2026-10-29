@@ -14,6 +14,7 @@
 #                                    pretraining alone takes ~2 days on one A30, so resubmit until it reports done.
 set -euo pipefail
 cd "${SLURM_SUBMIT_DIR:-.}"
+export LD_LIBRARY_PATH="${CONDA_PREFIX:+$CONDA_PREFIX/lib:}${LD_LIBRARY_PATH:-}"   # the env's libstdc++ before the system one
 PRED=results/predictions
 REP=results/reports/structural
 CK=checkpoints

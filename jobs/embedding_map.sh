@@ -10,5 +10,6 @@
 #   sbatch jobs/embedding_map.sh        (environment: siteseer; needs jobs/chain.sh MODEL=main and jobs/sitetypes.sh)
 set -euo pipefail
 cd "${SLURM_SUBMIT_DIR:-.}"
+export LD_LIBRARY_PATH="${CONDA_PREFIX:+$CONDA_PREFIX/lib:}${LD_LIBRARY_PATH:-}"   # the env's libstdc++ before the system one
 [ -f data/embedding_map_cache.pt ] || python -u -m siteseer.eval.embedding_map extract
 python -u -m siteseer.eval.embedding_map project --out results/reports/embedding_map.json

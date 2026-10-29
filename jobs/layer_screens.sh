@@ -13,6 +13,7 @@
 #                                        of jobs/chain.sh). Extraction ~2 h on one GPU, the screens run on CPU.
 set -euo pipefail
 cd "${SLURM_SUBMIT_DIR:-.}"
+export LD_LIBRARY_PATH="${CONDA_PREFIX:+$CONDA_PREFIX/lib:}${LD_LIBRARY_PATH:-}"   # the env's libstdc++ before the system one
 REP=results/reports/layer_screens
 mkdir -p "$REP"
 screen () {   # csv  dir-a  label-a  dir-b  label-b  out  n-train  n-test  test-splits...

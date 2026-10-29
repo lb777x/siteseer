@@ -11,6 +11,7 @@
 #   sbatch jobs/same_data.sh        (environment: siteseer; needs jobs/chain.sh MODEL=main and pipeline steps 13-15)
 set -euo pipefail
 cd "${SLURM_SUBMIT_DIR:-.}"
+export LD_LIBRARY_PATH="${CONDA_PREFIX:+$CONDA_PREFIX/lib:}${LD_LIBRARY_PATH:-}"   # the env's libstdc++ before the system one
 PRED=results/predictions
 CK=checkpoints
 CAT=dataset/catalodb_squidly/catalodb_squidly.csv

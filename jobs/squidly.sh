@@ -12,6 +12,7 @@
 # ~11 GB of GPU memory; minutes per set.
 set -euo pipefail
 cd "${SLURM_SUBMIT_DIR:-.}"
+export LD_LIBRARY_PATH="${CONDA_PREFIX:+$CONDA_PREFIX/lib:}${LD_LIBRARY_PATH:-}"   # the env's libstdc++ before the system one
 MODELS=${SQUIDLY_WEIGHTS:-external/squidly}/models/3B
 OUT=data/comparisons/squidly
 [ -d "$MODELS" ] || { echo "missing $MODELS: run envs/install_squidly.sh"; exit 1; }

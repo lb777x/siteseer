@@ -195,3 +195,13 @@ def test_structural_delta(data_root, tmp_path, stage, row):
                      str(tmp_path / "m.json"), data_root, extra=["--drop-label-mismatch"])
     for key, r in ref["metrics"].items():
         assert got["metrics"][key]["ci95"] == pytest.approx(r["ci95"], abs=1e-12), key
+
+
+def test_docking_paired(data_root, tmp_path):
+    env = dict(os.environ, PYTHONPATH=os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    subprocess.run([sys.executable, "-m", "siteseer.docking.paired", "--csv",
+                    need(data_root, "results/docking/comparison.csv"), "--out-json", str(tmp_path / "p.json")],
+                   check=True, env=env, capture_output=True)
+    ref = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures/data/docking_paired.json")
+    got, want = json.load(open(tmp_path / "p.json")), json.load(open(ref))
+    assert {k: got[k] for k in want} == want   # figure 3.16: 637 paired proteins, runtime saving 19.3%

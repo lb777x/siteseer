@@ -10,7 +10,7 @@
 # the same node (whole structure; 15 A crop around the main model's predicted site; the same with a
 # probability-weighted centre). Array task K of N docks every N-th protein; conditions interleaved in blocks of 20.
 #   sbatch jobs/docking.sh          then, when all tasks are done:   bash jobs/docking.sh post
-# Environments: SITESEER_ENV (default siteseer) for the set, crops and analysis; DIFFDOCK_ENV (default diffdock,
+# Environments: SITESEER_ENV (default siteseer) for the set, crops and analysis; DIFFDOCK_ENV (default siteseer-diffdock,
 # envs/install_diffdock.sh) and DIFFDOCK_HOME (default external/DiffDock) for docking. Needs jobs/chain.sh
 # MODEL=main and the structures of jobs/structural.sh (siteseer.structural.download). Resumable.
 set -euo pipefail
@@ -44,7 +44,7 @@ python -u -m siteseer.docking.crops "${COMMON[@]}" --output-dir "$CROPS/predicte
     --residues-out-csv "$CROPS/predicted_residues_shard$K.csv"
 python -u -m siteseer.docking.crops "${COMMON[@]}" --output-dir "$CROPS/predicted_cropped_weighted" --weighted-centroid
 
-conda activate "${DIFFDOCK_ENV:-diffdock}"
+conda activate "${DIFFDOCK_ENV:-siteseer-diffdock}"
 TOTAL=$(python -c "import pandas as pd; print(len(pd.read_csv('$SET')))")
 D=(--csv "$SET" --out-dir "$RUNS" --tracker-csv "$OUT/tracker_shard$K.csv" --smiles-json "$LIG"
    --shard-index "$K" --num-shards "$N")

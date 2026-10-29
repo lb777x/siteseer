@@ -1,0 +1,107 @@
+{
+ "xmax": 0.95,
+ "series": [
+  {
+   "name": "EasIFA ESM-bin",
+   "color_key": "baseline"
+  },
+  {
+   "name": "EasIFA SaProt-bin",
+   "color_key": "baseline_alt"
+  },
+  {
+   "name": "Flat (this work)",
+   "color_key": "flat"
+  }
+ ],
+ "metrics": [
+  {
+   "name": "Macro F1",
+   "values": [
+    0.586,
+    0.613,
+    0.725
+   ],
+   "deltas": [
+    {
+     "vs": "ESM-bin",
+     "delta": 0.139,
+     "ci": [
+      0.08,
+      0.201
+     ],
+     "p_gt0": 1.0
+    },
+    {
+     "vs": "SaProt-bin",
+     "delta": 0.112,
+     "ci": [
+      0.055,
+      0.169
+     ],
+     "p_gt0": 1.0
+    }
+   ]
+  },
+  {
+   "name": "Macro MCC",
+   "values": [
+    0.598,
+    0.629,
+    0.738
+   ],
+   "deltas": [
+    {
+     "vs": "ESM-bin",
+     "delta": 0.14,
+     "ci": [
+      0.083,
+      0.2
+     ],
+     "p_gt0": 1.0
+    },
+    {
+     "vs": "SaProt-bin",
+     "delta": 0.108,
+     "ci": [
+      0.054,
+      0.162
+     ],
+     "p_gt0": 1.0
+    }
+   ]
+  },
+  {
+   "name": "Macro AUPRC",
+   "values": [
+    0.673,
+    0.705,
+    0.811
+   ],
+   "deltas": [
+    {
+     "vs": "ESM-bin",
+     "delta": 0.138,
+     "ci": [
+      0.086,
+      0.196
+     ],
+     "p_gt0": 1.0
+    },
+    {
+     "vs": "SaProt-bin",
+     "delta": 0.106,
+     "ci": [
+      0.053,
+      0.16
+     ],
+     "p_gt0": 1.0
+    }
+   ]
+  }
+ ],
+ "delta_xlim": [
+  -0.02,
+  0.26
+ ]
+}

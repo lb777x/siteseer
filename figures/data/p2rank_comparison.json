@@ -1,0 +1,69 @@
+{
+ "rows": [
+  {
+   "key": "V/site",
+   "label": "Non-enzymes, all ligands",
+   "n": 1632,
+   "p2rank": 0.194,
+   "ours": 0.245,
+   "delta": 0.051,
+   "ci": [
+    0.034,
+    0.067
+   ]
+  },
+  {
+   "key": "V/metal",
+   "label": "Non-enzymes, metal ions",
+   "n": 806,
+   "p2rank": 0.101,
+   "ours": 0.348,
+   "delta": 0.247,
+   "ci": [
+    0.225,
+    0.269
+   ]
+  },
+  {
+   "key": "V/organic",
+   "label": "Non-enzymes, organic ligands",
+   "n": 891,
+   "p2rank": 0.269,
+   "ours": 0.147,
+   "delta": -0.122,
+   "ci": [
+    -0.138,
+    -0.106
+   ]
+  },
+  {
+   "key": "goliath/site",
+   "label": "Enzymes (Goliath), all sites",
+   "n": 616,
+   "p2rank": 0.405,
+   "ours": 0.925,
+   "delta": 0.52,
+   "ci": [
+    0.499,
+    0.541
+   ]
+  },
+  {
+   "key": "mcsa/site",
+   "label": "M-CSA, catalytic residues",
+   "n": 92,
+   "p2rank": 0.361,
+   "ours": 0.765,
+   "delta": 0.404,
+   "ci": [
+    0.34,
+    0.47
+   ]
+  }
+ ],
+ "xmax": 1.12,
+ "delta_xlim": [
+  -0.2,
+  0.66
+ ]
+}

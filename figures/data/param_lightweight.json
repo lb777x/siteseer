@@ -1,0 +1,23 @@
+{
+ "xlabel": "Trainable parameters (log scale)",
+ "bars": [
+  {
+   "name": "Flat (this work)",
+   "value": 164097,
+   "label": "164K",
+   "color_key": "flat"
+  },
+  {
+   "name": "EasIFA ESM-bin",
+   "value": 675273846,
+   "label": "675M",
+   "color_key": "baseline"
+  },
+  {
+   "name": "EasIFA SaProt-bin",
+   "value": 678016693,
+   "label": "678M",
+   "color_key": "baseline"
+  }
+ ]
+}

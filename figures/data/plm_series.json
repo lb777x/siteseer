@@ -1,0 +1,62 @@
+{
+ "rows": [
+  {
+   "key": "esm2l30",
+   "label": "ESM-2 650M · layer 30",
+   "main": true,
+   "macro_auprc": 0.776,
+   "macro_f1": 0.67
+  },
+  {
+   "key": "esm2_fix2",
+   "label": "ESM-2 650M · layer 33",
+   "main": false,
+   "macro_auprc": 0.736,
+   "macro_f1": 0.62,
+   "delta_auprc": -0.04,
+   "ci_auprc": [
+    -0.049,
+    -0.03
+   ],
+   "delta_f1": -0.05,
+   "ci_f1": [
+    -0.062,
+    -0.038
+   ]
+  },
+  {
+   "key": "esm23b_fix2",
+   "label": "ESM-2 3B · layer 36",
+   "main": false,
+   "macro_auprc": 0.727,
+   "macro_f1": 0.59,
+   "delta_auprc": -0.049,
+   "ci_auprc": [
+    -0.059,
+    -0.039
+   ],
+   "delta_f1": -0.08,
+   "ci_f1": [
+    -0.093,
+    -0.067
+   ]
+  },
+  {
+   "key": "flat_fix2",
+   "label": "ESMC 6B · layer 80",
+   "main": false,
+   "macro_auprc": 0.709,
+   "macro_f1": 0.591,
+   "delta_auprc": -0.067,
+   "ci_auprc": [
+    -0.08,
+    -0.054
+   ],
+   "delta_f1": -0.079,
+   "ci_f1": [
+    -0.094,
+    -0.064
+   ]
+  }
+ ]
+}

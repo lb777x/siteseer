@@ -3,7 +3,8 @@
 Protein score = maximum residue probability. Threshold: Youden on the validation part of set G (split by 40%
 family) against M-CSA valid; reported on the report parts of the non-enzyme sets and on the enzyme test sets
 (never trained on). Shares with 95% Wilson intervals; ROC-AUC of G (report part) against each enzyme test set with a
-bootstrap CI (1,000 draws, seed 42, resampling within classes).
+bootstrap CI (1,000 draws, seed 42, resampling within classes). Also the score histogram (25 bins) of set G and of
+the enzyme test sets, in percent of each group.
 
   python -m siteseer.negatives.analyze --abc results/negatives/main_abc --gold results/negatives/main_gold \\
       --pos results/negatives/main_pos --gold-csv dataset/negatives/negatives_gold.csv --out-json negatives.json
@@ -19,7 +20,7 @@ from sklearn.metrics import roc_auc_score
 SEED = 42
 ENZYMES = [("reallabels_test", "Real-labels test"), ("goliath_test", "Goliath test"), ("mcsa_test", "M-CSA test")]
 NEGATIVES = [("G", "G: confident non-enzymes"), ("A", "A: non-enzymes by annotation"),
-             ("C", "C: enzyme-like (>=50% identity)"), ("B", "B: with binding sites (alarm intended)")]
+             ("C", "C: enzyme-like (≥50% identity)"), ("B", "B: with binding sites (alarm intended)")]
 
 
 def wilson(k, n, z=1.96):
@@ -89,6 +90,11 @@ def main():
                            for s, lab in NEGATIVES],
            "auroc_G_report_vs": {g: dict(zip(("auroc", "ci95"), auroc_ci(v, g_rep["max_prob"].to_numpy())))
                                  for g, v in enz.items()}}
+    bins = np.linspace(0, 1, 26)
+    e_all = np.concatenate(list(enz.values()))
+    out["score_hist"] = {"bins": bins.tolist(),
+                         "G_pct": (np.histogram(g_all, bins)[0] * 100 / len(g_all)).tolist(),
+                         "enzymes_pct": (np.histogram(e_all, bins)[0] * 100 / len(e_all)).tolist()}
     cat = g_rep.join(pd.read_csv(args.gold_csv).set_index("accession")[["kw_category"]], on="id")
     stats = [{"category": c, **share(d["max_prob"].to_numpy(), t)} for c, d in cat.groupby("kw_category")]
     out["categories"] = sorted(stats, key=lambda r: r["rate_pct"])

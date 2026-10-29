@@ -1,0 +1,33 @@
+{
+ "rows": [
+  {
+   "set": "CataloDB test",
+   "n": 231,
+   "metric": "Macro AUPRC",
+   "squidly": 0.735,
+   "flat": 0.77,
+   "delta": 0.035,
+   "ci": [
+    0.003,
+    0.066
+   ]
+  },
+  {
+   "set": "CataloDB test",
+   "n": 231,
+   "metric": "Macro F1",
+   "squidly": 0.567,
+   "flat": 0.618,
+   "delta": 0.05,
+   "ci": [
+    0.003,
+    0.096
+   ]
+  }
+ ],
+ "xmax": 1.0,
+ "delta_xlim": [
+  -0.06,
+  0.17
+ ]
+}

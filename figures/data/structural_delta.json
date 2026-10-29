@@ -1,0 +1,71 @@
+{
+ "xlabel": "Δ pooled AUPRC (Structural − Flat), paired, 95% CI",
+ "rows": [
+  {
+   "label": "63.8k proteins",
+   "delta": 0.039,
+   "ci": [
+    0.031,
+    0.047
+   ],
+   "n": 1005,
+   "flat": 0.816,
+   "structural": 0.854,
+   "paired": true,
+   "vs_main": {
+    "delta": -0.073,
+    "ci": [
+     -0.087,
+     -0.061
+    ],
+    "n": 1005,
+    "main": 0.928,
+    "structural": 0.854
+   }
+  },
+  {
+   "label": "33.5k proteins",
+   "delta": -0.005,
+   "ci": [
+    -0.025,
+    0.017
+   ],
+   "n": 392,
+   "flat": 0.897,
+   "structural": 0.892,
+   "paired": true,
+   "vs_main": {
+    "delta": -0.07,
+    "ci": [
+     -0.1,
+     -0.039
+    ],
+    "n": 392,
+    "main": 0.962,
+    "structural": 0.892
+   }
+  },
+  {
+   "label": "770 (M-CSA, 5-fold)",
+   "delta": -0.017,
+   "ci": [
+    -0.029,
+    -0.003
+   ],
+   "n": 886,
+   "flat": 0.676,
+   "structural": 0.659,
+   "paired": true,
+   "vs_main": {
+    "delta": -0.072,
+    "ci": [
+     -0.092,
+     -0.052
+    ],
+    "n": 886,
+    "main": 0.731,
+    "structural": 0.659
+   }
+  }
+ ]
+}

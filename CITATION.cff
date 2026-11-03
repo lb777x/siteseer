@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: "If you use SiteSeer, please cite it as below."
+title: "SiteSeer: Enzyme Active Sites from Sequence with a Frozen Language Model"
+type: software
+authors:
+  - family-names: Bohr
+    given-names: Luca
+license: MIT
+repository-code: "https://github.com/lb777x/siteseer"
+version: 1.0.0
+keywords:
+  - enzyme active sites
+  - protein language models
+  - ESM-2

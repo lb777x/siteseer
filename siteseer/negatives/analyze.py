@@ -1,4 +1,4 @@
-"""Negative control: does the model flag proteins without an active site? Numbers for figures 3.18-3.20.
+"""Negative control: does the model flag proteins without an active site? Numbers for figures/plot_negatives.py.
 
 Protein score = maximum residue probability. Threshold: Youden on the validation part of set G (split by 40%
 family) against M-CSA valid; reported on the report parts of the non-enzyme sets and on the enzyme test sets

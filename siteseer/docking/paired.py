@@ -1,4 +1,4 @@
-"""Docking on predicted crops against the full structure, paired per protein (figure 3.16): proteins with a pose
+"""Docking on predicted crops against the full structure, paired per protein: proteins with a pose
 in every condition; per crop condition the mean confidence difference and the mean relative runtime saving
 (global - crop) / global, each with a 95% percentile bootstrap CI over proteins (1,000 draws, seed 42), and the
 share of proteins with higher confidence. All conditions of a protein ran on the same node.

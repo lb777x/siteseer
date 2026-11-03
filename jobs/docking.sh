@@ -6,9 +6,9 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=48G
 #SBATCH --time=48:00:00
-# Docking application (figures 3.16, 3.17): DiffDock on the 757 docking proteins, three conditions per protein on
-# the same node (whole structure; 15 A crop around the main model's predicted site; the same with a
-# probability-weighted centre). Array task K of N docks every N-th protein; conditions interleaved in blocks of 20.
+# Docking application: DiffDock on the 757 docking proteins, three conditions per protein on the same node (whole
+# structure; 15 A crop around the main model's predicted site; the same with a probability-weighted centre).
+# Array task K of N docks every N-th protein; conditions interleaved in blocks of 20.
 #   sbatch jobs/docking.sh          then, when all tasks are done:   bash jobs/docking.sh post
 # Environments: SITESEER_ENV (default siteseer) for the set, crops and analysis; DIFFDOCK_ENV (default siteseer-diffdock,
 # envs/install_diffdock.sh) and DIFFDOCK_HOME (default external/DiffDock) for docking. Needs jobs/chain.sh

@@ -10,7 +10,8 @@ PATTERNS = {
     "absolute home path": re.compile(r"/home/\w+"),
     "cluster node name": re.compile(r"bioinf-|euryale|stheno|yamata"),
     "old package name": re.compile(r"\blejepa\.|lejepa/"),
-    "thesis-internal reference": re.compile(r"METHODOLOGY|\bsec \d+|§\d+|FIGURES\.md|thesis_writing_notes"),
+    "thesis-internal reference": re.compile(r"METHODOLOGY|\bsec \d+|§\d+|FIGURES\.md|thesis_writing_notes|\bthesis\b"),
+    "thesis figure number": re.compile(r"\b[Ff]ig(ure)?s?\.? ?\d+\.\d+"),
     "German umlaut": re.compile(r"[äöüÄÖÜß]"),
 }
 ALLOW = {"tests/test_hygiene.py"}

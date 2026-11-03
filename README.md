@@ -86,8 +86,19 @@ download the processed data from the data release, or rebuild them from the orig
 
 `run_pipeline.sh` runs steps 01-19 (label transfer from M-CSA, M3Site and BioLiP, 90%-identity splits with MMseqs2,
 exclusion of M-CSA and EasIFA test homologues, cross-validation folds, comparison and negative-control sets) and
-checks every output against `pipeline/expected_sha256.txt`. Structures for the structural ablation and the docking
-come from the AlphaFold DB:
+checks every output against `pipeline/expected_sha256.txt`.
+
+Three names recur in file and config names:
+
+- **Goliath pool:** EasIFA's large, weakly labelled enzyme set; the stage-1 training data (stage 1.5 uses its
+  curated part).
+- **fix1** (step 09): duplicate ids with conflicting labels take the curated label, and every protein of the M-CSA
+  pool and its >= 90% homologues is excluded from the stage-1 data.
+- **fix2** (step 10): additionally excludes proteins whose M-CSA labels were transferred by homology (step 01) from
+  training and validation, so no relative of an M-CSA test protein carries its labels upstream. The main model is
+  trained on fix2 data.
+
+Structures for the structural ablation and the docking come from the AlphaFold DB:
 
     python -m siteseer.structural.download --csv <CSV files> --out-dir data/structures
 
@@ -100,7 +111,7 @@ root, with the environment active. Each resumes where it stopped.
 
     sbatch jobs/chain.sh                       # or: MODEL=main bash jobs/chain.sh
 
-**Language models** (figure 3.23), then the paired comparisons:
+**Language models**, then the paired comparisons:
 
     for M in esm2_l33 esm2_3b esmc_6b; do sbatch --export=ALL,MODEL=$M jobs/chain.sh; done
     bash jobs/compare_plms.sh
@@ -111,13 +122,13 @@ root, with the environment active. Each resumes where it stopped.
 |---|---|---|
 | `jobs/seeds.sh` | seed spread | main model |
 | `jobs/layer_screens.sh` | linear screens of ESM-2 and ESMC layers | ESMC and layer-33 chains |
-| `jobs/same_data.sh`, `jobs/squidly.sh`, `jobs/compare_external.sh` | EasIFA and Squidly comparisons (figures 3.8, 3.9, 3.24) | main model |
+| `jobs/same_data.sh`, `jobs/squidly.sh`, `jobs/compare_external.sh` | EasIFA and Squidly comparisons | main model |
 | `jobs/sitetypes.sh` | catalytic vs binding outputs | main model |
-| `jobs/negatives.sh` | negative control (figures 3.18-3.20) | site-type model |
-| `jobs/p2rank.sh` | comparison with P2Rank (figure 3.25) | negative control |
-| `jobs/embedding_map.sh` | embedding maps (figures 3.21, 3.22) | site-type model |
-| `jobs/structural.sh` | structural ablation (figure 3.15) | ESMC chain |
-| `jobs/docking.sh`, then `bash jobs/docking.sh post` | docking (figures 3.16, 3.17) | main model, structures |
+| `jobs/negatives.sh` | negative control | site-type model |
+| `jobs/p2rank.sh` | comparison with P2Rank | negative control |
+| `jobs/embedding_map.sh` | embedding maps | site-type model |
+| `jobs/structural.sh` | structural ablation | ESMC chain |
+| `jobs/docking.sh`, then `bash jobs/docking.sh post` | docking | main model, structures |
 
 **Figures:** `figures/data/` holds the numbers of every figure; rebuild them from your runs, then draw:
 

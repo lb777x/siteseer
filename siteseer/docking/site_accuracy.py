@@ -2,7 +2,7 @@
 hit = a heavy ligand atom within --contact A (4) of a heavy atom of an annotated site residue; d = distance of the
 ligand centroid to the CA centroid of the site. From the 10 poses of the global run, without new docking:
 global_rerank = the pose closest to the predicted site's CA centroid, global_oracle = any pose hits (upper bound).
-Poses are in the frame of the full structure (crops keep coordinates). Figure 3.17 is drawn from this table
+Poses are in the frame of the full structure (crops keep coordinates). The site-hit figure is drawn from this table
 (figures/plot_docking_site_hits.py --csv).
 
   python -m siteseer.docking.site_accuracy --set dataset/docking/goliath_test_dock.csv --raw-dir data/structures \\
@@ -98,7 +98,7 @@ def main():
         pr = [r for r in pred.get(uid, []) if r in res and res[r][1] is not None]
         if pr:
             pc = np.mean([res[r][1] for r in pr], axis=0)
-            rec["d_compass_site"] = float(np.linalg.norm(pc - site_c))
+            rec["d_predicted_site"] = float(np.linalg.norm(pc - site_c))
         for cond in CONDS:
             ps = poses(os.path.join(args.out_dir, f"{uid}{cond}"))
             if not ps:

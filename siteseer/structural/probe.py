@@ -1,5 +1,5 @@
 """Structural probe: a frozen, self-supervised GVP encoder over the AlphaFold structure, fused with the untouched
-ESMC embedding, then the Flat head. The structural ablation of the thesis (ESMC-6B, fix1 data).
+ESMC embedding, then the Flat head. Used for the structural ablation (ESMC-6B, fix1 data).
 
   per residue: fusion = ReLU(Linear([ESMC (2560) || GVP (256)] -> 256)), dropout; head as the Flat probe
 """

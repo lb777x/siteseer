@@ -1,7 +1,7 @@
-"""What the frozen ESM-2 embedding already separates. Figure 3.21: UMAP of the same residues in four
-representations (layer 33 raw, layer 30 standardised, hidden layer of the site-type and of the Flat head), non-site /
-binding / catalytic. Figure 3.22: UMAP of mean-pooled protein embeddings by EC class. The kNN purity in the original
-space (under each panel) carries the statement; UMAP only illustrates. Data: figures/data/embedding_map.json.
+"""What the frozen ESM-2 embedding already separates. embedding_map_residues.png: UMAP of the same residues in
+four representations (layer 33 raw, layer 30 standardised, hidden layer of the site-type and of the Flat head),
+non-site / binding / catalytic. embedding_map_ec.png: UMAP of mean-pooled protein embeddings by EC class. The kNN
+purity in the original space (under each panel) carries the statement; UMAP only illustrates. Data: figures/data/embedding_map.json.
 
   python figures/plot_embedding_map.py
 """

@@ -7,7 +7,7 @@
 #SBATCH --time=24:00:00
 # Negative control and the inputs of the P2Rank comparison: the main model (M-CSA stage) and the site-type model
 # (stage 1) score the non-enzyme sets, the pocket candidates and the enzyme test sets (raw residue logits, no
-# fallback); then the negative-control numbers (figures 3.18-3.20).
+# fallback); then the negative-control numbers (plot_negatives).
 #   sbatch jobs/negatives.sh        (environment: siteseer; needs jobs/chain.sh MODEL=main, jobs/sitetypes.sh and
 #                                    pipeline steps 17-19)
 set -euo pipefail

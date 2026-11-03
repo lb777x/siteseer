@@ -5,7 +5,7 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=96G
 #SBATCH --time=48:00:00
-# Structural ablation (figure 3.15), on ESMC-6B and fix1 data:
+# Structural ablation (plot_structural_delta), on ESMC-6B and fix1 data:
 #   structures (AlphaFold DB) -> self-supervised GVP pretraining -> structural probe stage 1, 1.5, M-CSA and 5-fold
 #   -> the same chain with the Flat probe (the controlled comparison) -> paired bootstraps (Structural minus Flat,
 #   and Structural minus the main model).
@@ -83,7 +83,7 @@ for i in 0 1 2 3 4; do
     evaluate "esmc_fix1_kfold$i" "$PRED/esmc_fix1_kfold${i}_test.pt" --config configs/main/kfold.yaml "${E[@]}" --set $(fold $i)
 done
 
-echo "=== paired comparisons (pooled AUPRC in figure 3.15) ==="
+echo "=== paired comparisons (pooled AUPRC, plot_structural_delta) ==="
 for A in esmc_fix1 main; do
     for X in stage1 stage15; do
         python -u -m siteseer.eval.paired_bootstrap --a "$PRED/${A}_${X}_test.pt" --label-a "$A" \

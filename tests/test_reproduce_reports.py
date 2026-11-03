@@ -77,7 +77,7 @@ def test_easifa_ablation(data_root, tmp_path):
     subprocess.run([sys.executable, "-m", "siteseer.comparisons.easifa_ablation", "--results-dir", results,
                     "--out-json", str(out)], check=True, env=env, capture_output=True)
     r = json.load(open(out))
-    # reported values (figure 3.9): gain in macro F1 with 95% CI
+    # reported values: gain in macro F1 with 95% CI
     assert round(r["structure"]["0~40%"]["gain"], 4) == 0.0160
     assert [round(x, 4) for x in r["structure"]["0~40%"]["ci95"]] == [-0.0005, 0.0326]
     assert [round(x, 4) for x in r["reaction"]["0~40%"]["ci95"]] == [0.0068, 0.0386]
@@ -182,7 +182,7 @@ def test_structural_delta(data_root, tmp_path, stage, row):
     files = lambda n: [need(data_root, f"results/predictions/{n}_kfold{i}_test.pt") for i in range(5)] \
         if stage == "kfold" else [need(data_root, f"results/predictions/{n}_{stage}_test.pt")]
     fig = json.load(open(need(data_root, "results/reports/structural_delta_figure.json")))["rows"][row]
-    # controlled: Structural minus Flat, both on ESMC-6B and fix1 data (figure 3.15, filled markers)
+    # controlled: Structural minus Flat, both on ESMC-6B and fix1 data
     got = run_paired(files("esmc_fix1"), files("structural"), "flat", "structural", 1000, str(tmp_path / "c.json"),
                      data_root, extra=["--drop-label-mismatch"])
     m = got["metrics"]["pooled_auprc"]
@@ -204,4 +204,4 @@ def test_docking_paired(data_root, tmp_path):
                    check=True, env=env, capture_output=True)
     ref = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures/data/docking_paired.json")
     got, want = json.load(open(tmp_path / "p.json")), json.load(open(ref))
-    assert {k: got[k] for k in want} == want   # figure 3.16: 637 paired proteins, runtime saving 19.3%
+    assert {k: got[k] for k in want} == want   # 637 paired proteins, runtime saving 19.3%

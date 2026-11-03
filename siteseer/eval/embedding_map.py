@@ -1,4 +1,4 @@
-"""Embedding maps: what do the frozen ESM-2 embeddings already separate? (figures 3.21 and 3.22)
+"""Embedding maps: what do the frozen ESM-2 embeddings already separate?
 
 residues  Goliath stage-1 test proteins with both catalytic and binding annotations: catalytic-only, binding-only and
           non-site residues (all site residues, 20 random non-site residues per protein), in four representations:

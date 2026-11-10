@@ -23,6 +23,7 @@ case "$MODEL" in
     *) echo "MODEL must be main, esm2_l33, esm2_3b or esmc_6b"; exit 1 ;;
 esac
 PRED=results/predictions
+KX=dataset/mcsa_fine_tune/kfold/excluded_overlap_ids.txt   # 5-fold proteins left out of scoring (pipeline step 21)
 REP=results/reports
 CK=checkpoints
 mkdir -p "$PRED" "$REP"
@@ -86,5 +87,6 @@ for i in 0 1 2 3 4; do
     evaluate "$R" configs/main/kfold.yaml valid "$PRED/${R}_valid.pt"
 done
 python -u -m siteseer.eval.aggregate_kfold --predictions "$PRED/${MODEL}"_kfold{0,1,2,3,4}_test.pt \
-    --valid-predictions "$PRED/${MODEL}"_kfold{0,1,2,3,4}_valid.pt --out-json "$REP/${MODEL}_kfold.json"
+    --valid-predictions "$PRED/${MODEL}"_kfold{0,1,2,3,4}_valid.pt --exclude-ids "$KX" \
+    --out-json "$REP/${MODEL}_kfold.json"
 echo "=== done: $PRED/${MODEL}_*.pt, $REP/${MODEL}_kfold.json, $CK/${MODEL}_* ==="

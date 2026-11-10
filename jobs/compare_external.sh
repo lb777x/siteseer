@@ -14,6 +14,7 @@ set -euo pipefail
 cd "${SLURM_SUBMIT_DIR:-.}"
 export LD_LIBRARY_PATH="${CONDA_PREFIX:+$CONDA_PREFIX/lib:}${LD_LIBRARY_PATH:-}"   # the env's libstdc++ before the system one
 PRED=results/predictions
+KX=dataset/mcsa_fine_tune/kfold/excluded_overlap_ids.txt   # 5-fold proteins left out of scoring (pipeline step 21)
 REP=results/reports
 EA=data/comparisons/easifa
 SQ=data/comparisons/squidly
@@ -42,6 +43,6 @@ for S in all lt30 lt50; do
     RESTRICT=()
     if [ "$S" != all ]; then RESTRICT=(--restrict-ids "dataset/squidly/mcsa_ids_$S.txt"); fi
     paired --a "$PRED"/main_kfold{0,1,2,3,4}_test.pt --label-a main_kfold --b "$SQ/mcsa_preds.pt" --label-b squidly_3B \
-        --threshold-b 0.6 "${RESTRICT[@]}" --out-json "$REP/squidly_mcsa_$S.json"
+        --threshold-b 0.6 "${RESTRICT[@]}" --exclude-ids "$KX" --out-json "$REP/squidly_mcsa_$S.json"
 done
 echo "=== done: $REP/ ==="

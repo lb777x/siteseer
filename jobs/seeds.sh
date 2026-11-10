@@ -13,6 +13,7 @@ set -euo pipefail
 cd "${SLURM_SUBMIT_DIR:-.}"
 export LD_LIBRARY_PATH="${CONDA_PREFIX:+$CONDA_PREFIX/lib:}${LD_LIBRARY_PATH:-}"   # the env's libstdc++ before the system one
 PRED=results/predictions
+KX=dataset/mcsa_fine_tune/kfold/excluded_overlap_ids.txt   # 5-fold proteins left out of scoring (pipeline step 21)
 REP=results/reports/seeds
 CK=checkpoints
 KF=dataset/mcsa_fine_tune/kfold
@@ -60,14 +61,15 @@ done
 RUNS=(main main_seed43 main_seed44 main_seed45 main_seed46)
 SUMMARY_SETS=(kfold_test kfold_valid stage2_mcsa_test)
 if [ -f "$EASIFA82" ]; then SUMMARY_SETS+=(stage2_easifa82_test); fi
-python -u -m siteseer.eval.seed_summary --runs "${RUNS[@]}" --sets "${SUMMARY_SETS[@]}" --out-json "$REP/seed_summary.json"
+python -u -m siteseer.eval.seed_summary --runs "${RUNS[@]}" --sets "${SUMMARY_SETS[@]}" --exclude-ids "$KX" \
+    --out-json "$REP/seed_summary.json"
 python -u -m siteseer.eval.ensemble --out-json "$REP/ensemble_mcsa95.json" \
     --predictions "$PRED/main_stage2_mcsa_test.pt" "$PRED"/main_seed{43,44,45,46}_stage2_mcsa_test.pt
 for SEED in 43 44 45 46; do
     for S in test valid; do
         python -u -m siteseer.eval.paired_bootstrap --label-a seed42 --label-b seed$SEED --n-bootstrap 2000 \
             --a "$PRED"/main_kfold{0,1,2,3,4}_$S.pt --b "$PRED"/main_seed${SEED}_kfold{0,1,2,3,4}_$S.pt \
-            --out-json "$REP/kfold_${S}_seed42_vs_seed$SEED.json"
+            --exclude-ids "$KX" --out-json "$REP/kfold_${S}_seed42_vs_seed$SEED.json"
     done
 done
 echo "=== done: $PRED/main_seed*.pt, $REP/, $CK/main_seed* ==="

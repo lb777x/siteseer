@@ -11,13 +11,14 @@ set -euo pipefail
 cd "${SLURM_SUBMIT_DIR:-.}"
 export LD_LIBRARY_PATH="${CONDA_PREFIX:+$CONDA_PREFIX/lib:}${LD_LIBRARY_PATH:-}"   # the env's libstdc++ before the system one
 PRED=results/predictions
+KX=dataset/mcsa_fine_tune/kfold/excluded_overlap_ids.txt   # 5-fold proteins left out of scoring (pipeline step 21)
 REP=results/reports
 mkdir -p "$REP"
 for V in esm2_l33 esm2_3b esmc_6b; do
     for S in test valid; do
         if ! ls "$PRED/${V}"_kfold{0,1,2,3,4}_$S.pt >/dev/null 2>&1; then echo "[*] $V $S: predictions missing"; continue; fi
         python -u -m siteseer.eval.paired_bootstrap --label-a main --label-b "$V" --n-bootstrap 2000 \
-            --a "$PRED"/main_kfold{0,1,2,3,4}_$S.pt --b "$PRED/${V}"_kfold{0,1,2,3,4}_$S.pt \
+            --a "$PRED"/main_kfold{0,1,2,3,4}_$S.pt --b "$PRED/${V}"_kfold{0,1,2,3,4}_$S.pt --exclude-ids "$KX" \
             --out-json "$REP/plm_kfold_${S}_main_vs_$V.json"
     done
 done

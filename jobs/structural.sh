@@ -16,6 +16,7 @@ set -euo pipefail
 cd "${SLURM_SUBMIT_DIR:-.}"
 export LD_LIBRARY_PATH="${CONDA_PREFIX:+$CONDA_PREFIX/lib:}${LD_LIBRARY_PATH:-}"   # the env's libstdc++ before the system one
 PRED=results/predictions
+KX=dataset/mcsa_fine_tune/kfold/excluded_overlap_ids.txt   # 5-fold proteins left out of scoring (pipeline step 21)
 REP=results/reports/structural
 CK=checkpoints
 KF=dataset/mcsa_fine_tune/kfold
@@ -92,6 +93,6 @@ for A in esmc_fix1 main; do
     done
     python -u -m siteseer.eval.paired_bootstrap --a "$PRED/${A}"_kfold{0,1,2,3,4}_test.pt --label-a "$A" \
         --b "$PRED"/structural_kfold{0,1,2,3,4}_test.pt --label-b structural --drop-label-mismatch --n-bootstrap 1000 \
-        --out-json "$REP/${A}_vs_structural_kfold.json"
+        --exclude-ids "$KX" --out-json "$REP/${A}_vs_structural_kfold.json"
 done
 echo "=== done: $PRED/{structural,esmc_fix1}_*.pt, $REP/, $CK/{gvp_ssl,structural_*,esmc_fix1_*} ==="

@@ -1,6 +1,7 @@
 """The release statistics code reproduces reported comparisons exactly from the saved predictions."""
 import json
 import os
+import shutil
 import subprocess
 import sys
 
@@ -9,6 +10,8 @@ import pytest
 from conftest import need
 
 slow = pytest.mark.skipif(os.environ.get("SITESEER_SLOW") != "1", reason="slow; set SITESEER_SLOW=1")
+EXCLUDE = "dataset/mcsa_fine_tune/kfold/excluded_overlap_ids.txt"   # 5-fold proteins left out of scoring (step 21)
+ENV = dict(os.environ, PYTHONPATH=os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 def run_paired(a, b, label_a, label_b, n_bootstrap, out, cwd, extra=()):
@@ -23,8 +26,9 @@ def test_layer30_vs_layer33_kfold(data_root, tmp_path):
     ref = json.load(open(need(data_root, "results/reports/layer30_vs_layer33_kfold.json")))
     a = [need(data_root, f"results/predictions/esm2_l33_kfold{i}_test.pt") for i in range(5)]
     b = [need(data_root, f"results/predictions/main_kfold{i}_test.pt") for i in range(5)]
-    got = run_paired(a, b, ref["label_a"], ref["label_b"], ref["n_bootstrap"], str(tmp_path / "out.json"), data_root)
-    assert got["n_shared_proteins"] == ref["n_shared_proteins"] == 962
+    got = run_paired(a, b, ref["label_a"], ref["label_b"], ref["n_bootstrap"], str(tmp_path / "out.json"), data_root,
+                     extra=["--exclude-ids", need(data_root, EXCLUDE)])
+    assert got["n_shared_proteins"] == ref["n_shared_proteins"] == 933
     for key, r in ref["metrics"].items():
         g = got["metrics"][key]
         assert g["a"] == pytest.approx(r["a"], abs=1e-12) and g["b"] == pytest.approx(r["b"], abs=1e-12), key
@@ -36,8 +40,9 @@ def test_plm_series_kfold(data_root, tmp_path, variant):
     ref = json.load(open(need(data_root, f"results/reports/plm_kfold_main_vs_{variant}.json")))
     a = [need(data_root, f"results/predictions/main_kfold{i}_test.pt") for i in range(5)]
     b = [need(data_root, f"results/predictions/{variant}_kfold{i}_test.pt") for i in range(5)]
-    got = run_paired(a, b, ref["label_a"], ref["label_b"], ref["n_bootstrap"], str(tmp_path / "out.json"), data_root)
-    assert got["n_shared_proteins"] == ref["n_shared_proteins"] == 962
+    got = run_paired(a, b, ref["label_a"], ref["label_b"], ref["n_bootstrap"], str(tmp_path / "out.json"), data_root,
+                     extra=["--exclude-ids", need(data_root, EXCLUDE)])
+    assert got["n_shared_proteins"] == ref["n_shared_proteins"] == 933
     for key, r in ref["metrics"].items():
         assert got["metrics"][key]["ci95"] == pytest.approx(r["ci95"], abs=1e-12), key
 
@@ -50,12 +55,14 @@ def test_seed_summary(data_root, tmp_path):
     out = tmp_path / "seeds.json"
     env = dict(os.environ, PYTHONPATH=os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     subprocess.run([sys.executable, "-m", "siteseer.eval.seed_summary", "--runs", *runs,
-                    "--sets", "kfold_test", "stage2_easifa82_test", "--out-json", str(out)],
+                    "--sets", "kfold_test", "stage2_easifa82_test", "--exclude-ids", need(data_root, EXCLUDE),
+                    "--out-json", str(out)],
                    check=True, cwd=data_root, env=env, capture_output=True)
     s = json.load(open(out))
     kf, e82 = s["kfold_test"]["summary"], s["stage2_easifa82_test"]["summary"]
-    assert round(kf["macro_auprc"]["mean"], 3) == 0.776 and round(kf["macro_auprc"]["sd"], 3) == 0.001
-    assert round(kf["macro_f1"]["mean"], 3) == 0.670
+    assert s["kfold_test"]["runs"]["main"]["n_proteins"] == 933
+    assert round(kf["macro_auprc"]["mean"], 3) == 0.774 and round(kf["macro_auprc"]["sd"], 3) == 0.001
+    assert round(kf["macro_f1"]["mean"], 3) == 0.667
     assert round(e82["macro_f1"]["mean"], 3) == 0.721 and round(e82["macro_auprc"]["mean"], 3) == 0.813
 
 
@@ -118,8 +125,9 @@ def test_squidly_mcsa_lt30(data_root, tmp_path):
     a = [need(data_root, f"results/predictions/main_kfold{i}_test.pt") for i in range(5)]
     got = run_paired(a, [need(data_root, "data/comparisons/squidly/mcsa_preds.pt")], ref["label_a"], ref["label_b"],
                      ref["n_bootstrap"], str(tmp_path / "out.json"), data_root,
-                     extra=["--threshold-b", "0.6", "--restrict-ids", need(data_root, "dataset/squidly/mcsa_ids_lt30.txt")])
-    assert got["n_shared_proteins"] == ref["n_shared_proteins"] == 427
+                     extra=["--threshold-b", "0.6", "--exclude-ids", need(data_root, EXCLUDE),
+                            "--restrict-ids", need(data_root, "dataset/squidly/mcsa_ids_lt30.txt")])
+    assert got["n_shared_proteins"] == ref["n_shared_proteins"] == 420
     for key, r in ref["metrics"].items():
         assert got["metrics"][key]["ci95"] == pytest.approx(r["ci95"], abs=1e-12), key
 
@@ -182,9 +190,10 @@ def test_structural_delta(data_root, tmp_path, stage, row):
     files = lambda n: [need(data_root, f"results/predictions/{n}_kfold{i}_test.pt") for i in range(5)] \
         if stage == "kfold" else [need(data_root, f"results/predictions/{n}_{stage}_test.pt")]
     fig = json.load(open(need(data_root, "results/reports/structural_delta_figure.json")))["rows"][row]
+    ex = ["--exclude-ids", need(data_root, EXCLUDE)] if stage == "kfold" else []
     # controlled: Structural minus Flat, both on ESMC-6B and fix1 data
     got = run_paired(files("esmc_fix1"), files("structural"), "flat", "structural", 1000, str(tmp_path / "c.json"),
-                     data_root, extra=["--drop-label-mismatch"])
+                     data_root, extra=["--drop-label-mismatch", *ex])
     m = got["metrics"]["pooled_auprc"]
     assert got["n_shared_proteins"] == fig["n"]
     assert (round(m["a"], 3), round(m["b"], 3), round(m["delta"], 3)) == (fig["flat"], fig["structural"], fig["delta"])
@@ -192,9 +201,28 @@ def test_structural_delta(data_root, tmp_path, stage, row):
     # against the main model (hollow markers): the saved report exactly
     ref = json.load(open(need(data_root, f"results/reports/structural_vs_main_{stage}.json")))
     got = run_paired(files("main"), files("structural"), ref["label_a"], ref["label_b"], ref["n_bootstrap"],
-                     str(tmp_path / "m.json"), data_root, extra=["--drop-label-mismatch"])
+                     str(tmp_path / "m.json"), data_root, extra=["--drop-label-mismatch", *ex])
     for key, r in ref["metrics"].items():
         assert got["metrics"][key]["ci95"] == pytest.approx(r["ci95"], abs=1e-12), key
+
+
+def test_main_kfold(data_root, tmp_path):
+    ref = json.load(open(need(data_root, "results/reports/main_kfold.json")))
+    p = [need(data_root, f"results/predictions/main_kfold{i}_{s}.pt") for s in ("test", "valid") for i in range(5)]
+    subprocess.run([sys.executable, "-m", "siteseer.eval.aggregate_kfold", "--predictions", *p[:5],
+                    "--valid-predictions", *p[5:], "--exclude-ids", need(data_root, EXCLUDE),
+                    "--out-json", str(tmp_path / "out.json")], check=True, cwd=data_root, env=ENV, capture_output=True)
+    got = json.load(open(tmp_path / "out.json"))
+    assert got == ref
+    assert got["n_proteins"] == 933 and round(got["threshold_0.5"]["macro_point"]["auprc"], 3) == 0.774
+
+
+@pytest.mark.skipif(not (os.environ.get("MMSEQS_BIN") or shutil.which("mmseqs")), reason="needs MMseqs2")
+def test_identity_bands(data_root, tmp_path):
+    ref = json.load(open(need(data_root, "results/reports/identity_bands.json")))
+    subprocess.run([sys.executable, "-m", "siteseer.eval.identity_bands", "--out-json", str(tmp_path / "out.json"),
+                    "--out-csv", str(tmp_path / "out.csv")], check=True, cwd=data_root, env=ENV, capture_output=True)
+    assert json.load(open(tmp_path / "out.json")) == ref
 
 
 def test_docking_paired(data_root, tmp_path):

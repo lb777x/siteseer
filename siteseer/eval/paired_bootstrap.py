@@ -100,6 +100,8 @@ def main():
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--restrict-ids", default=None,
                    help="restrict the comparison to these protein ids (one per line)")
+    p.add_argument("--exclude-ids", default=None,
+                   help="leave these protein ids out (one per line), e.g. the 5-fold overlap list of pipeline step 21")
     p.add_argument("--drop-label-mismatch", action="store_true",
                    help="leave out proteins whose label vectors differ between the sides (e.g. structure vs. UniProt "
                         "sequence in the structural ablation) instead of aborting")
@@ -112,6 +114,11 @@ def main():
         keep = {l.strip() for l in open(args.restrict_ids) if l.strip()}
         ids = [i for i in ids if i in keep]
         print(f"[*] --restrict-ids: {len(ids)} of the shared proteins are in {args.restrict_ids}")
+    if args.exclude_ids:
+        drop = {l.strip() for l in open(args.exclude_ids) if l.strip()}
+        n = len(ids)
+        ids = [i for i in ids if i not in drop]
+        print(f"[*] --exclude-ids: {n - len(ids)} shared proteins left out ({args.exclude_ids})")
     print(f"[+] {args.label_a}: {len(A)} proteins, {args.label_b}: {len(B)} proteins, "
           f"intersection: {len(ids)} (only {args.label_a}: {len(set(A) - set(B))}, "
           f"only {args.label_b}: {len(set(B) - set(A))})")

@@ -30,9 +30,11 @@ python "$P/08_cluster_exclusion.py" --source-csv $L/cached_dataframe_resplit90_e
     --out-csv $L/cached_dataframe_resplit90_fully_excl.csv --flag excluded_easifa_test_cluster90 \
     --protect-ids $D/easifa_test_protein_ids.txt
 # training data of every reported model: merge, M-CSA exclusion (fix1), label-transfer removal (fix2), M-CSA folds
+# and the fold proteins that overlap stage-1 entries
 python "$P/09_fix1_datasets.py"
 python "$P/10_fix2_datasets.py"
 python "$P/11_mcsa_kfold.py"
+python "$P/21_kfold_overlap.py"     # 5-fold proteins also in stage-1 data: left out of 5-fold scoring
 # comparison sets: EasIFA's M-CSA and Swiss-Prot test sets with its predictions, EasIFA's and Squidly's training data
 python "$P/12_easifa82.py"
 python "$P/13_easifa_swissprot.py"

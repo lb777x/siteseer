@@ -1,7 +1,8 @@
 """Spread of the main model's metrics over training seeds (threshold 0.5).
 
 Per run and prediction set: macro AUPRC, F1, MCC (per protein, averaged) and pooled AUPRC; then mean, SD (n - 1) and
-range over runs. A set named kfold_test / kfold_valid pools the five folds' files.
+range over runs. A set named kfold_test / kfold_valid pools the five folds' files; --exclude-ids (pipeline step 21)
+applies to those sets only.
 
   python -m siteseer.eval.seed_summary --runs main main_seed43 main_seed44 main_seed45 main_seed46 \\
       --sets kfold_test kfold_valid stage2_mcsa_test stage2_easifa82_test --out-json seeds.json
@@ -24,12 +25,13 @@ def files_for(pred_dir: str, run: str, name: str) -> list:
     return [os.path.join(pred_dir, f"{run}_{name}.pt")]
 
 
-def summarise(paths: list) -> dict:
+def summarise(paths: list, exclude: frozenset = frozenset()) -> dict:
     logits, labels = [], []
     for p in paths:
         d = torch.load(p, weights_only=False)
-        logits.extend(d["logits"])
-        labels.extend(d["labels"])
+        keep = [k for k, i in enumerate(d["protein_ids"]) if str(i).strip() not in exclude]
+        logits.extend(d["logits"][k] for k in keep)
+        labels.extend(d["labels"][k] for k in keep)
     per = [binary_metrics(lo, la) for lo, la in zip(logits, labels)]
     out = {f"macro_{k}": float(np.mean([m[k] for m in per])) for k in ("auprc", "f1", "mcc")}
     out["pooled_auprc"] = float(average_precision_score(torch.cat(labels).numpy(), torch.cat(logits).numpy()))
@@ -42,12 +44,15 @@ def main():
     ap.add_argument("--runs", nargs="+", required=True, help="prediction-file prefixes, one per seed")
     ap.add_argument("--sets", nargs="+", required=True)
     ap.add_argument("--pred-dir", default="results/predictions")
+    ap.add_argument("--exclude-ids", default=None, help="protein ids left out of the kfold_* sets (one per line)")
     ap.add_argument("--out-json", default=None)
     args = ap.parse_args()
+    exclude = frozenset(l.strip() for l in open(args.exclude_ids) if l.strip()) if args.exclude_ids else frozenset()
 
     out = {}
     for name in args.sets:
-        per_run = {run: summarise(files_for(args.pred_dir, run, name)) for run in args.runs}
+        ex = exclude if name.startswith("kfold_") else frozenset()
+        per_run = {run: summarise(files_for(args.pred_dir, run, name), ex) for run in args.runs}
         stats = {}
         for k in ("macro_auprc", "macro_f1", "macro_mcc", "pooled_auprc"):
             v = np.array([per_run[r][k] for r in args.runs])

@@ -14,7 +14,7 @@ PRED=results/predictions
 KX=dataset/mcsa_fine_tune/kfold/excluded_overlap_ids.txt   # 5-fold proteins left out of scoring (pipeline step 21)
 REP=results/reports
 mkdir -p "$REP"
-for V in esm2_l33 esm2_3b esmc_6b; do
+for V in esm2_l33 esm2_l33_std esm2_3b esmc_6b; do
     for S in test valid; do
         if ! ls "$PRED/${V}"_kfold{0,1,2,3,4}_$S.pt >/dev/null 2>&1; then echo "[*] $V $S: predictions missing"; continue; fi
         python -u -m siteseer.eval.paired_bootstrap --label-a main --label-b "$V" --n-bootstrap 2000 \

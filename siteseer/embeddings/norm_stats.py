@@ -1,6 +1,7 @@
 """Per-dimension mean and standard deviation of an embedding cache, from 2,000 random training proteins (seed 42).
 
-Written once to <cache>/norm_stats.pt and never overwritten, so training, evaluation and inference use the same values.
+Written once to <cache>/norm_stats.pt (or --out) and never overwritten, so training, evaluation and inference use the
+same values.
 
   python -m siteseer.embeddings.norm_stats --cache-dir data/embeddings_goliath_esm2_l30
 """
@@ -18,8 +19,10 @@ def main():
     ap.add_argument("--csv", default="dataset/label_diffusion/cached_dataframe_fully_excl_fix2.csv")
     ap.add_argument("--n", type=int, default=2000)
     ap.add_argument("--seed", type=int, default=42)
+    ap.add_argument("--out", default=None, help="default: <cache-dir>/norm_stats.pt")
     args = ap.parse_args()
-    out = os.path.join(args.cache_dir, "norm_stats.pt")
+    out = args.out or os.path.join(args.cache_dir, "norm_stats.pt")
+    os.makedirs(os.path.dirname(out) or ".", exist_ok=True)
     if os.path.exists(out):
         print(f"[*] {out} exists -- not overwritten (statistics must stay fixed once training used them)")
         return

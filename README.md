@@ -47,11 +47,13 @@ stage-1 training entries (pipeline step 21); they stay in the folds for training
 With the environment below and the trained model from the data release (`checkpoints/main_stage2_mcsa/best.pt`,
 `data/embeddings_goliath_esm2_l30/norm_stats.pt`):
 
-    python -m siteseer.predict proteins.fasta --out predictions.tsv
+    python -m siteseer.predict examples/t4_lysozyme.fasta --out predictions.tsv
 
 This prints the predicted active-site residues per protein and writes the probability of every residue to
-`predictions.tsv`. For T4 lysozyme it returns Glu11 and Asp20, its two catalytic residues. ESM-2 downloads its weights
-on first use (2.5 GB); a CPU is enough for single proteins. Sequences longer than 1,022 residues are truncated.
+`predictions.tsv`. For T4 lysozyme (UniProt P00720) it returns Glu11 and Asp20, its two catalytic residues; the
+protein is in the M-CSA training split, so this checks the installation, not the model. Any FASTA file works the same
+way. ESM-2 downloads its weights on first use (2.5 GB); a CPU is enough for single proteins. Sequences longer than
+1,022 residues are truncated.
 
 ### Setup environment <a name="environment"></a>
 
@@ -151,13 +153,14 @@ structural checks.
 
 ## Repository layout <a name="layout"></a>
 
-    pipeline/    data acquisition and preprocessing (steps 00-20)
+    pipeline/    data acquisition and preprocessing (steps 00-21)
     siteseer/    data, embeddings, models, train, eval, comparisons, negatives, structural, docking, predict
     configs/     main model, language-model overlays, same-data runs, structural ablation
     jobs/        one script per experiment
     figures/     figure data and plot scripts
     envs/        pinned environments and install scripts
     tests/       unit and reproduction tests
+    examples/    input for the Quick start
 
 ## License <a name="license"></a>
 

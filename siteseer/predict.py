@@ -4,7 +4,7 @@ Writes one row per residue (protein, position, amino acid, probability, predicte
 protein. A residue is predicted when its probability exceeds --threshold (0.5, as for the reported results).
 Sequences are truncated to 1022 residues (ESM-2's limit).
 
-  python -m siteseer.predict proteins.fasta --out predictions.tsv
+  python -m siteseer.predict examples/t4_lysozyme.fasta --out predictions.tsv
 """
 import argparse
 

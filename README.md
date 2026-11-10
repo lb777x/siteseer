@@ -29,14 +29,16 @@ The citation follows on publication.
 
 | Benchmark | SiteSeer | Compared with |
 |---|---|---|
-| M-CSA, 5-fold over 962 proteins, macro AUPRC / F1 | 0.776 / 0.670 | ESM-2 layer 33: 0.736 / 0.620; ESMC-6B: 0.709 / 0.591 |
+| M-CSA, 5-fold over 933 proteins, macro AUPRC / F1 | 0.774 / 0.668 | ESM-2 layer 33: 0.733 / 0.616; ESMC-6B: 0.707 / 0.588 |
+| The same, proteins < 30% identical to the stage-1 training data, macro AUPRC | 0.529 | 30-50%: 0.798; ≥ 70%: 0.856 |
 | EasIFA's 82 M-CSA test proteins, macro F1 / AUPRC | 0.725 / 0.811 | EasIFA ESM-bin 0.586 / 0.673; SaProt-bin 0.613 / 0.705 |
 | Squidly's CataloDB test set, same training data, macro AUPRC | 0.770 | Squidly 3B 0.735 |
 | Confident non-enzymes predicted to have an active site | 10.8% | enzymes: 96.5-98.6% |
 | DiffDock rank-1 pose at the annotated site, poses re-ranked by SiteSeer | 76.9% | DiffDock alone 65.3% |
 
 Every comparison is paired over the same proteins (bootstrap, 95% CI). Over five training seeds the M-CSA macro
-AUPRC is 0.776 ± 0.001.
+AUPRC is 0.774 ± 0.001. The 5-fold leaves out 29 of the 962 M-CSA proteins that also occur, whole or as a domain, in
+stage-1 training entries (pipeline step 21); they stay in the folds for training.
 
 ## Usage <a name="usage"></a>
 
@@ -84,9 +86,9 @@ download the processed data from the data release, or rebuild them from the orig
 - **Frozen copies from the data release:** sources that change over time, namely BioLiP and the UniProt queries
   behind the negative control (2026-10-05).
 
-`run_pipeline.sh` runs steps 01-19 (label transfer from M-CSA, M3Site and BioLiP, 90%-identity splits with MMseqs2,
-exclusion of M-CSA and EasIFA test homologues, cross-validation folds, comparison and negative-control sets) and
-checks every output against `pipeline/expected_sha256.txt`.
+`run_pipeline.sh` runs steps 01-19 and 21 (label transfer from M-CSA, M3Site and BioLiP, 90%-identity splits with
+MMseqs2, exclusion of M-CSA and EasIFA test homologues, cross-validation folds and the fold proteins left out of their
+scoring, comparison and negative-control sets) and checks every output against `pipeline/expected_sha256.txt`.
 
 Three names recur in file and config names:
 
@@ -127,6 +129,7 @@ root, with the environment active. Each resumes where it stopped.
 | `jobs/negatives.sh` | negative control | site-type model |
 | `jobs/p2rank.sh` | comparison with P2Rank | negative control |
 | `jobs/embedding_map.sh` | embedding maps | site-type model |
+| `jobs/identity_bands.sh` | 5-fold scores by identity to the training data | main model |
 | `jobs/structural.sh` | structural ablation | ESMC chain |
 | `jobs/docking.sh`, then `bash jobs/docking.sh post` | docking | main model, structures |
 

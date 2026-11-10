@@ -120,8 +120,19 @@ def docking_paired(results):
     return load(results, "docking", "paired.json")
 
 
+def identity_bands(results):
+    r = load(results, "reports", "identity_bands.json")
+    out = {"n_proteins": r["n_proteins"], "n_excluded": r["n_excluded"], "macro_auprc_all": R3(r["macro_auprc_all"])}
+    for name in ("pool", "fold"):
+        out[name] = {"spearman": R3(r[name]["spearman"]),
+                     "bands": [{"band": b["band"], "n": b["n"], "macro_auprc": R3(b["macro_auprc"]), "ci": CI3(b["ci95"])}
+                               for b in r[name]["bands"]]}
+    return out
+
+
 BUILDERS = {f.__name__: f for f in (param_lightweight, easifa_comparison, easifa_ablation, plm_series, structural_delta,
-                                    squidly_same_data, p2rank_comparison, negatives_control, embedding_map, docking_paired)}
+                                    squidly_same_data, p2rank_comparison, negatives_control, embedding_map, docking_paired,
+                                    identity_bands)}
 
 
 def main():

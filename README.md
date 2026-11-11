@@ -29,7 +29,7 @@ The citation follows on publication.
 
 | Benchmark | SiteSeer | Compared with |
 |---|---|---|
-| M-CSA, 5-fold over 933 proteins, macro AUPRC / F1 | 0.774 / 0.668 | ESM-2 layer 33: 0.733 / 0.616; ESMC-6B: 0.707 / 0.588 |
+| M-CSA, 5-fold over 933 proteins, macro AUPRC / F1 | 0.774 / 0.668 | ESM-2 layer 33: 0.733 / 0.616 (standardised: 0.749 / 0.644); ESMC-6B: 0.707 / 0.588 |
 | The same, proteins < 30% identical to the stage-1 training data, macro AUPRC | 0.529 | 30-50%: 0.798; ≥ 70%: 0.856 |
 | EasIFA's 82 M-CSA test proteins, macro F1 / AUPRC | 0.725 / 0.811 | EasIFA ESM-bin 0.586 / 0.673; SaProt-bin 0.613 / 0.705 |
 | Squidly's CataloDB test set, same training data, macro AUPRC | 0.770 | Squidly 3B 0.735 |
@@ -117,7 +117,7 @@ root, with the environment active. Each resumes where it stopped.
 
 **Language models**, then the paired comparisons:
 
-    for M in esm2_l33 esm2_3b esmc_6b; do sbatch --export=ALL,MODEL=$M jobs/chain.sh; done
+    for M in esm2_l33 esm2_l33_std esm2_3b esmc_6b; do sbatch --export=ALL,MODEL=$M jobs/chain.sh; done
     bash jobs/compare_plms.sh
 
 **Further experiments**, in this order:

@@ -4,7 +4,7 @@
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=16G
 #SBATCH --time=04:00:00
-# Each language model against the main model on the 5-fold M-CSA predictions (962 proteins), paired bootstrap with
+# Each language model against the main model on the 5-fold M-CSA predictions (933 scored proteins), paired bootstrap with
 # 2,000 draws over proteins, on the test folds and on the validation folds (the layer was chosen on validation).
 #   bash jobs/compare_plms.sh        (CPU; needs jobs/chain.sh for MODEL=main and each variant)
 set -euo pipefail
@@ -22,3 +22,9 @@ for V in esm2_l33 esm2_l33_std esm2_3b esmc_6b; do
             --out-json "$REP/plm_kfold_${S}_main_vs_$V.json"
     done
 done
+# standardisation alone: layer 33 as returned vs layer 33 standardised like the main model's layer 30
+if ls "$PRED"/esm2_l33{,_std}_kfold{0,1,2,3,4}_test.pt >/dev/null 2>&1; then
+    python -u -m siteseer.eval.paired_bootstrap --label-a esm2_l33 --label-b esm2_l33_std --n-bootstrap 2000 \
+        --a "$PRED"/esm2_l33_kfold{0,1,2,3,4}_test.pt --b "$PRED"/esm2_l33_std_kfold{0,1,2,3,4}_test.pt \
+        --exclude-ids "$KX" --out-json "$REP/layer33_raw_vs_std_kfold.json"
+fi

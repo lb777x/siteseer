@@ -35,7 +35,19 @@ def test_layer30_vs_layer33_kfold(data_root, tmp_path):
         assert g["ci95"] == pytest.approx(r["ci95"], abs=1e-12), key
 
 
-@pytest.mark.parametrize("variant", ["esm2_l33", "esm2_3b", "esmc_6b"])
+def test_layer33_standardisation_kfold(data_root, tmp_path):
+    # the same layer with and without the per-dimension standardisation the main model uses
+    ref = json.load(open(need(data_root, "results/reports/layer33_raw_vs_std_kfold.json")))
+    a = [need(data_root, f"results/predictions/esm2_l33_kfold{i}_test.pt") for i in range(5)]
+    b = [need(data_root, f"results/predictions/esm2_l33_std_kfold{i}_test.pt") for i in range(5)]
+    got = run_paired(a, b, ref["label_a"], ref["label_b"], ref["n_bootstrap"], str(tmp_path / "out.json"), data_root,
+                     extra=["--exclude-ids", need(data_root, EXCLUDE)])
+    assert got["n_shared_proteins"] == ref["n_shared_proteins"] == 933
+    for key, r in ref["metrics"].items():
+        assert got["metrics"][key]["ci95"] == pytest.approx(r["ci95"], abs=1e-12), key
+
+
+@pytest.mark.parametrize("variant", ["esm2_l33", "esm2_l33_std", "esm2_3b", "esmc_6b"])
 def test_plm_series_kfold(data_root, tmp_path, variant):
     ref = json.load(open(need(data_root, f"results/reports/plm_kfold_main_vs_{variant}.json")))
     a = [need(data_root, f"results/predictions/main_kfold{i}_test.pt") for i in range(5)]
